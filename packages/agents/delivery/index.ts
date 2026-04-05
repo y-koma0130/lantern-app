@@ -1,45 +1,44 @@
+import { fetchOrgMembers } from "../shared/org-repository.js";
+import type { Organization } from "../shared/types.js";
 import { sendEmail } from "./email.js";
-import { fetchPendingDigests, fetchSubscribersByIds, saveDeliveryLog } from "./repository.js";
+import { fetchPendingDigests, saveDeliveryLog } from "./repository.js";
 
-export async function runDelivery(): Promise<void> {
+export async function runDelivery(org: Organization): Promise<void> {
 	console.log("[Delivery] Starting...");
 
-	const digests = await fetchPendingDigests();
-	const subscriberIds = [...new Set(digests.map((d) => d.subscriberId))];
-	const subscriberMap = await fetchSubscribersByIds(subscriberIds);
+	const digests = await fetchPendingDigests(org.id);
 
 	for (const digest of digests) {
-		const subscriber = subscriberMap.get(digest.subscriberId);
+		if (org.channelEmail) {
+			const members = await fetchOrgMembers(org.id);
 
-		if (!subscriber) {
-			console.warn(`[Delivery] Subscriber not found: ${digest.subscriberId}`);
-			continue;
-		}
-
-		if (subscriber.channelEmail) {
-			try {
-				await sendEmail({
-					to: subscriber.email,
-					subject: `Lantern Weekly Intelligence Digest — ${digest.weekOf}`,
-					html: digest.contentHtml,
-				});
-
-				await saveDeliveryLog({
-					digestId: digest.id,
-					channel: "email",
-					status: "sent",
-				});
-			} catch (error) {
-				console.error(`[Delivery] Failed to send email to ${subscriber.email}:`, error);
-
+			for (const member of members) {
 				try {
+					await sendEmail({
+						to: member.email,
+						subject: `Lantern Weekly Intelligence Digest — ${digest.weekOf}`,
+						html: digest.contentHtml,
+					});
+
 					await saveDeliveryLog({
+						orgId: org.id,
 						digestId: digest.id,
 						channel: "email",
-						status: "failed",
+						status: "sent",
 					});
-				} catch (logError) {
-					console.error("[Delivery] Failed to save delivery log:", logError);
+				} catch (error) {
+					console.error(`[Delivery] Failed to send email to ${member.email}:`, error);
+
+					try {
+						await saveDeliveryLog({
+							orgId: org.id,
+							digestId: digest.id,
+							channel: "email",
+							status: "failed",
+						});
+					} catch (logError) {
+						console.error("[Delivery] Failed to save delivery log:", logError);
+					}
 				}
 			}
 		}

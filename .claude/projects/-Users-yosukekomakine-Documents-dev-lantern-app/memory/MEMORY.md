@@ -1,0 +1,2 @@
+- [Project progress](project_progress.md) — Lantern MVP implementation status and remaining tasks
+- [User profile](user_profile.md) — Developer preferences and working style

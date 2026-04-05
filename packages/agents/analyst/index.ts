@@ -1,11 +1,12 @@
+import type { Organization } from "../shared/types.js";
 import { detectDiffs } from "./differ.js";
 import { fetchRecentSnapshots, saveInsights } from "./repository.js";
 import { scoreSignal } from "./scorer.js";
 
-export async function runAnalyst(): Promise<void> {
+export async function runAnalyst(org: Organization): Promise<void> {
 	console.log("[Analyst] Starting...");
 
-	const snapshots = await fetchRecentSnapshots();
+	const snapshots = await fetchRecentSnapshots(org.id);
 	const allInsights: Parameters<typeof saveInsights>[0] = [];
 
 	for (const snapshot of snapshots) {
@@ -16,6 +17,7 @@ export async function runAnalyst(): Promise<void> {
 				const score = scoreSignal(diff);
 
 				allInsights.push({
+					orgId: org.id,
 					competitorId: snapshot.competitorId,
 					snapshotId: snapshot.id,
 					type: diff.type,

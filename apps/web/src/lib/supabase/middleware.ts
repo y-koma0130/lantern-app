@@ -1,6 +1,6 @@
 import type { CookieOptions } from "@supabase/ssr";
 import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import type { NextRequest, NextResponse } from "next/server";
 import { getEnvVar } from "./env";
 
 interface CookieToSet {
@@ -9,23 +9,24 @@ interface CookieToSet {
 	options: CookieOptions;
 }
 
-export async function createClient() {
-	const cookieStore = await cookies();
-
-	return createServerClient(
+export function createMiddlewareClient(request: NextRequest, response: NextResponse) {
+	const supabase = createServerClient(
 		getEnvVar("NEXT_PUBLIC_SUPABASE_URL"),
 		getEnvVar("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
 		{
 			cookies: {
 				getAll() {
-					return cookieStore.getAll();
+					return request.cookies.getAll();
 				},
 				setAll(cookiesToSet: CookieToSet[]) {
 					for (const { name, value, options } of cookiesToSet) {
-						cookieStore.set(name, value, options);
+						request.cookies.set(name, value);
+						response.cookies.set(name, value, options);
 					}
 				},
 			},
 		},
 	);
+
+	return { supabase, response };
 }

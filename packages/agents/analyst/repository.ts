@@ -2,10 +2,11 @@ import { getCurrentWeek } from "../shared/date.js";
 import { supabase } from "../shared/db.js";
 import type { CompetitorSnapshot, Insight } from "../shared/types.js";
 
-export async function fetchRecentSnapshots(): Promise<CompetitorSnapshot[]> {
+export async function fetchRecentSnapshots(orgId: string): Promise<CompetitorSnapshot[]> {
 	const { data, error } = await supabase
 		.from("competitor_snapshots")
 		.select("*")
+		.eq("org_id", orgId)
 		.order("collected_at", { ascending: false })
 		.limit(100);
 
@@ -18,6 +19,7 @@ export async function fetchRecentSnapshots(): Promise<CompetitorSnapshot[]> {
 
 export async function saveInsights(
 	inputs: {
+		orgId: string;
 		competitorId: string;
 		snapshotId: string;
 		type: Insight["type"];
@@ -30,6 +32,7 @@ export async function saveInsights(
 
 	const weekOf = getCurrentWeek();
 	const rows = inputs.map((input) => ({
+		org_id: input.orgId,
 		competitor_id: input.competitorId,
 		snapshot_id: input.snapshotId,
 		type: input.type,
