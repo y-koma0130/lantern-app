@@ -1,0 +1,1 @@
+export const INSIGHT_SCORE_THRESHOLD = 50;

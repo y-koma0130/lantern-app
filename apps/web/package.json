@@ -1,0 +1,29 @@
+{
+	"name": "@lantern/web",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@supabase/ssr": "^0.5.2",
+		"@supabase/supabase-js": "^2.47.12",
+		"jotai": "^2.11.0",
+		"next": "^15.1.4",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"zod": "^3.24.1"
+	},
+	"devDependencies": {
+		"@tailwindcss/postcss": "^4.0.8",
+		"@types/node": "^22.10.7",
+		"@types/react": "^19.0.7",
+		"@types/react-dom": "^19.0.3",
+		"babel-plugin-react-compiler": "^19.0.0-beta-b2e6b53-20250117",
+		"tailwindcss": "^4.0.8",
+		"typescript": "^5.7.3"
+	}
+}
