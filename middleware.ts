@@ -9,6 +9,7 @@ const PUBLIC_PATHS = [
 	"/invite",
 	"/auth",
 	"/api",
+	"/onboarding",
 	"/_next",
 	"/favicon.ico",
 ];
