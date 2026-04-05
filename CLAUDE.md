@@ -7,27 +7,38 @@
 - **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript
 - **Database:** Supabase (Postgres + Auth + RLS)
-- **Agent Runtime:** TypeScript + Anthropic SDK + node-cron
+- **Hosting:** Cloudflare Workers (OpenNext) + Browser Rendering + Cron Triggers
+- **Agent Runtime:** TypeScript + Anthropic SDK + @cloudflare/playwright
 - **Email:** Resend
 - **Notifications:** Slack Webhook, Discord Webhook
 - **Payments:** Stripe
-- **Hosting:** EC2 (agents), Vercel (web)
-- **UI:** Tailwind CSS, Atlassian Design System 準拠
+- **UI:** Tailwind CSS v4, Atlassian Design System 準拠
 - **State:** Jotai
 - **Validation:** Zod
 - **Linter/Formatter:** Biome
 - **React:** React Compiler 使用
 
+## プロジェクト構成
+
+```
+lantern-app/
+├── src/              # Next.js app (features, components, lib)
+├── app/              # Next.js App Router pages
+├── agents/           # Agent pipeline (collector, analyst, battle-card, delivery)
+├── workers/          # Cloudflare Worker entrypoints (cron, workflow)
+├── supabase/         # Migrations
+├── wrangler.jsonc    # Cloudflare config
+└── open-next.config.ts
+```
+
 ## コマンド
 
 ```bash
-pnpm install          # 依存関係インストール
 pnpm dev              # 開発サーバー起動
-pnpm build            # ビルド
+pnpm build            # Next.js ビルド
 pnpm lint:fix         # Biome lint + 自動修正
 pnpm typecheck        # TypeScript 型チェック
-pnpm supabase db push # マイグレーション適用
-pnpm supabase db reset # DB リセット
+pnpm deploy           # Cloudflare Workers デプロイ
 ```
 
 ## コーディングルール

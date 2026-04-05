@@ -1,33 +1,14 @@
-import { chromium } from "playwright";
-import type { Browser } from "playwright";
+import { launch } from "@cloudflare/playwright";
+import type { Browser, Page } from "@cloudflare/playwright";
 
 const NAVIGATION_TIMEOUT_MS = 30_000;
 const MAX_CONCURRENT_PAGES = 5;
 
-let launchPromise: Promise<Browser> | null = null;
+// The browser binding is passed from the Worker environment
+let browserBinding: unknown = null;
 
-async function getBrowser(): Promise<Browser> {
-	if (!launchPromise) {
-		launchPromise = chromium.launch({ headless: true });
-	}
-
-	const browser = await launchPromise;
-
-	if (!browser.isConnected()) {
-		launchPromise = chromium.launch({ headless: true });
-		return launchPromise;
-	}
-
-	return browser;
-}
-
-export async function closeBrowser(): Promise<void> {
-	if (!launchPromise) return;
-	const browser = await launchPromise;
-	launchPromise = null;
-	if (browser.isConnected()) {
-		await browser.close();
-	}
+export function setBrowserBinding(binding: unknown): void {
+	browserBinding = binding;
 }
 
 let activePages = 0;
@@ -58,9 +39,11 @@ export async function fetchRenderedHtml(
 ): Promise<string | null> {
 	await acquirePageSlot();
 
+	let browser: Browser | null = null;
+
 	try {
-		const browser = await getBrowser();
-		const page = await browser.newPage({
+		browser = await launch(browserBinding as Fetcher);
+		const page: Page = await browser.newPage({
 			userAgent:
 				"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
 		});
@@ -86,6 +69,13 @@ export async function fetchRenderedHtml(
 		console.warn(`[Browser] Failed to load ${url}: ${message}`);
 		return null;
 	} finally {
+		if (browser) {
+			await browser.close();
+		}
 		releasePageSlot();
 	}
+}
+
+export async function closeBrowser(): Promise<void> {
+	// No-op for Cloudflare — browser sessions are managed by the platform
 }

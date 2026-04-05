@@ -1,0 +1,27 @@
+{
+	"name": "lantern",
+	"compatibility_date": "2025-12-01",
+	"compatibility_flags": ["nodejs_compat"],
+
+	// Main worker serves the Next.js app via OpenNext
+	"main": ".open-next/worker.js",
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+
+	// Browser Rendering binding for Playwright
+	"browser": {
+		"binding": "BROWSER"
+	},
+
+	// Environment variables (secrets are set via `wrangler secret put`)
+	"vars": {
+		"NODE_ENV": "production"
+	},
+
+	// Cron triggers for the pipeline
+	"triggers": {
+		"crons": ["0 6 * * 1", "0 8 * * *"]
+	}
+}
