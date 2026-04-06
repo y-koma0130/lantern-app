@@ -9,6 +9,8 @@ interface DeliverySettingsFormProps {
 	initialChannelDiscord: string | null;
 	initialDigestFrequency: "monthly" | "weekly";
 	isOwner: boolean;
+	canSlackDiscord: boolean;
+	slackDiscordUpgradeMessage: string;
 }
 
 export function DeliverySettingsForm({
@@ -18,6 +20,8 @@ export function DeliverySettingsForm({
 	initialChannelDiscord,
 	initialDigestFrequency,
 	isOwner,
+	canSlackDiscord,
+	slackDiscordUpgradeMessage,
 }: DeliverySettingsFormProps) {
 	const [channelEmail, setChannelEmail] = useState(initialChannelEmail);
 	const [channelSlack, setChannelSlack] = useState(initialChannelSlack ?? "");
@@ -114,7 +118,7 @@ export function DeliverySettingsForm({
 						type="url"
 						value={channelSlack}
 						onChange={(e) => setChannelSlack(e.target.value)}
-						disabled={!isOwner}
+						disabled={!isOwner || !canSlackDiscord}
 						className={inputClass}
 						placeholder="https://hooks.slack.com/services/..."
 					/>
@@ -133,11 +137,13 @@ export function DeliverySettingsForm({
 						type="url"
 						value={channelDiscord}
 						onChange={(e) => setChannelDiscord(e.target.value)}
-						disabled={!isOwner}
+						disabled={!isOwner || !canSlackDiscord}
 						className={inputClass}
 						placeholder="https://discord.com/api/webhooks/..."
 					/>
 				</div>
+
+				{!canSlackDiscord && <p className="text-xs text-[#FF8B00]">{slackDiscordUpgradeMessage}</p>}
 
 				<div>
 					<label

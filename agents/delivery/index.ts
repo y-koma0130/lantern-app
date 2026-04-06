@@ -1,3 +1,4 @@
+import { canUseSlackDiscord } from "../../src/lib/plan-limits.js";
 import { fetchOrgMembers } from "../shared/org-repository.js";
 import type { Organization } from "../shared/types.js";
 import { sendEmail } from "./email.js";
@@ -5,6 +6,16 @@ import { fetchPendingDigests, saveDeliveryLog } from "./repository.js";
 
 export async function runDelivery(org: Organization): Promise<void> {
 	console.log("[Delivery] Starting...");
+
+	const slackDiscordEnabled = canUseSlackDiscord(org.plan);
+
+	if (org.channelSlack && !slackDiscordEnabled) {
+		console.log(`[Delivery] Skipping Slack for org ${org.name} (plan: ${org.plan})`);
+	}
+
+	if (org.channelDiscord && !slackDiscordEnabled) {
+		console.log(`[Delivery] Skipping Discord for org ${org.name} (plan: ${org.plan})`);
+	}
 
 	const digests = await fetchPendingDigests(org.id);
 

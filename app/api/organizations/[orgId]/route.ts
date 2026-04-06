@@ -1,4 +1,5 @@
 import { isErrorResponse, requireUser, zodErrorResponse } from "@/lib/api";
+import { UPGRADE_MESSAGES, canUseSlackDiscord } from "@/lib/plan-limits";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -61,8 +62,24 @@ export async function PATCH(
 		const parsed = updateOrgSchema.safeParse(body);
 		if (!parsed.success) return zodErrorResponse(parsed);
 
+		const { channelSlack, channelDiscord } = parsed.data;
+
+		// Check plan-based access for Slack/Discord webhooks
+		if (channelSlack !== undefined || channelDiscord !== undefined) {
+			const { data: orgData } = await supabase
+				.from("organizations")
+				.select("plan")
+				.eq("id", orgId)
+				.single();
+
+			const plan = orgData?.plan ?? "free";
+			if (!canUseSlackDiscord(plan)) {
+				return NextResponse.json({ error: UPGRADE_MESSAGES.slackDiscord }, { status: 403 });
+			}
+		}
+
 		const updates: Record<string, unknown> = {};
-		const { name, slug, channelEmail, channelSlack, channelDiscord, digestFrequency } = parsed.data;
+		const { name, slug, channelEmail, digestFrequency } = parsed.data;
 
 		if (name !== undefined) updates.name = name;
 		if (slug !== undefined) updates.slug = slug;

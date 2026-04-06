@@ -1,3 +1,4 @@
+import { canUseBattleCards } from "../src/lib/plan-limits.js";
 import { runAnalyst } from "./analyst/index.js";
 import { runBattleCardGenerator } from "./battle-card/index.js";
 import { runCollector } from "./collector/index.js";
@@ -17,7 +18,13 @@ export async function runPipeline(): Promise<void> {
 			console.log(`[Pipeline] Processing org: ${org.name} (${org.id})`);
 			await runCollector(org);
 			await runAnalyst(org);
-			await runBattleCardGenerator(org);
+
+			if (canUseBattleCards(org.plan)) {
+				await runBattleCardGenerator(org);
+			} else {
+				console.log(`[Pipeline] Skipping battle cards for org ${org.name} (plan: ${org.plan})`);
+			}
+
 			await runDelivery(org);
 		}
 

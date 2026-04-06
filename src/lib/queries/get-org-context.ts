@@ -6,6 +6,7 @@ interface OrgContext {
 	orgId: string;
 	orgName: string;
 	orgSlug: string;
+	orgPlan: string;
 	isOwner: boolean;
 	userId: string;
 }
@@ -49,6 +50,7 @@ export async function getOrgContext(orgSlug: string): Promise<OrgContext> {
 		orgId: org.id,
 		orgName: org.name,
 		orgSlug: org.slug,
+		orgPlan: org.plan ?? "free",
 		isOwner: membership.role === "owner",
 		userId: user.id,
 	};
