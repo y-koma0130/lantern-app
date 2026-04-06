@@ -2,14 +2,15 @@
 
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function SignupForm() {
+	const router = useRouter();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
-	const [success, setSuccess] = useState(false);
 	const [loading, setLoading] = useState(false);
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -41,28 +42,7 @@ export function SignupForm() {
 			return;
 		}
 
-		setSuccess(true);
-		setLoading(false);
-	}
-
-	if (success) {
-		return (
-			<div className="space-y-4 text-center">
-				<div className="rounded-md border border-green-200 bg-green-50 p-4 text-sm text-green-700">
-					<p className="font-medium">Check your email</p>
-					<p className="mt-1">
-						We sent a confirmation link to <span className="font-medium">{email}</span>. Click the
-						link to activate your account.
-					</p>
-				</div>
-				<p className="text-sm text-gray-500">
-					Already confirmed?{" "}
-					<Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
-						Sign in
-					</Link>
-				</p>
-			</div>
-		);
+		router.push("/");
 	}
 
 	return (

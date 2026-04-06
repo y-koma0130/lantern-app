@@ -30,7 +30,6 @@ export async function POST(request: Request) {
 			.single();
 
 		if (orgError) {
-			// Unique constraint on slug
 			if (orgError.code === "23505") {
 				return NextResponse.json({ error: "Slug is already taken" }, { status: 409 });
 			}

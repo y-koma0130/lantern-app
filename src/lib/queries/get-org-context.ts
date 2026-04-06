@@ -1,3 +1,4 @@
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -10,15 +11,16 @@ interface OrgContext {
 }
 
 export async function getOrgContext(orgSlug: string): Promise<OrgContext> {
-	const supabase = await createClient();
-
+	const authClient = await createClient();
 	const {
 		data: { user },
-	} = await supabase.auth.getUser();
+	} = await authClient.auth.getUser();
 
 	if (!user) {
 		redirect("/login");
 	}
+
+	const supabase = createAdminClient();
 
 	const { data: org } = await supabase
 		.from("organizations")

@@ -1,0 +1,54 @@
+import { Header } from "@/features/layout/components/header";
+import { Sidebar } from "@/features/layout/components/sidebar";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import type { ReactNode } from "react";
+
+interface AppShellProps {
+	children: ReactNode;
+}
+
+export async function AppShell({ children }: AppShellProps) {
+	const authClient = await createClient();
+	const {
+		data: { user },
+	} = await authClient.auth.getUser();
+
+	if (!user) {
+		redirect("/login");
+	}
+
+	const supabase = createAdminClient();
+	const { data: memberships } = await supabase
+		.from("organization_members")
+		.select("role, organizations(id, name, slug, plan)")
+		.eq("user_id", user.id);
+
+	const orgs = (memberships ?? []).map((m) => {
+		const org = m.organizations as unknown as {
+			id: string;
+			name: string;
+			slug: string;
+			plan: string;
+		};
+		return { ...org, role: m.role as string };
+	});
+
+	if (orgs.length === 0) {
+		redirect("/onboarding");
+	}
+
+	return (
+		<div className="flex h-screen flex-col bg-[#FAFBFC]">
+			<Header
+				user={{ email: user.email ?? "" }}
+				orgs={orgs.map((o) => ({ id: o.id, name: o.name, slug: o.slug }))}
+			/>
+			<div className="flex flex-1 overflow-hidden">
+				<Sidebar orgs={orgs.map((o) => ({ id: o.id, name: o.name, slug: o.slug }))} />
+				<main className="flex-1 overflow-y-auto p-8">{children}</main>
+			</div>
+		</div>
+	);
+}

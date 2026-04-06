@@ -1,22 +1,11 @@
-import { AddCompetitorForm } from "@/features/settings/components/add-competitor-form";
-import { CompetitorList } from "@/features/settings/components/competitor-list";
-import { getOrgContext } from "@/lib/queries/get-org-context";
-import { createClient } from "@/lib/supabase/server";
+import { CompetitorsPage } from "@/features/settings/components/competitors-page";
 
-interface CompetitorsPageProps {
+interface PageProps {
 	params: Promise<{ orgSlug: string }>;
 }
 
-export default async function CompetitorsPage({ params }: CompetitorsPageProps) {
+export default async function Page({ params }: PageProps) {
 	const { orgSlug } = await params;
-	const { orgId, isOwner } = await getOrgContext(orgSlug);
-
-	const supabase = await createClient();
-	const { data: competitors } = await supabase
-		.from("competitors")
-		.select("id, name, website, g2_url, niche")
-		.eq("org_id", orgId)
-		.order("created_at", { ascending: false });
 
 	return (
 		<div className="space-y-6">
@@ -26,10 +15,7 @@ export default async function CompetitorsPage({ params }: CompetitorsPageProps) 
 					Manage the competitors your organization is tracking.
 				</p>
 			</div>
-
-			{isOwner && <AddCompetitorForm orgId={orgId} />}
-
-			<CompetitorList competitors={competitors ?? []} orgId={orgId} isOwner={isOwner} />
+			<CompetitorsPage orgSlug={orgSlug} />
 		</div>
 	);
 }

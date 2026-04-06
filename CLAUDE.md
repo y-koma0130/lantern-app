@@ -20,15 +20,29 @@
 
 ## プロジェクト構成
 
+単一パッケージ構成（モノレポではない）。
+
 ```
 lantern-app/
-├── src/              # Next.js app (features, components, lib)
-├── app/              # Next.js App Router pages
-├── agents/           # Agent pipeline (collector, analyst, battle-card, delivery)
-├── workers/          # Cloudflare Worker entrypoints (cron, workflow)
-├── supabase/         # Migrations
-├── wrangler.jsonc    # Cloudflare config
-└── open-next.config.ts
+├── app/              # Next.js App Router pages (thin wrappers only!)
+│   ├── (auth)/       # ログイン・サインアップ
+│   ├── (app)/        # 認証済みアプリシェル ([orgSlug] スコープ)
+│   ├── api/          # Route Handlers
+│   ├── invite/       # 公開招待ページ
+│   ├── onboarding/   # 組織作成
+│   └── auth/callback/
+├── src/
+│   ├── components/   # 共通 UI コンポーネント
+│   ├── features/     # Feature モジュール (auth, dashboard, invite, layout, onboarding, settings)
+│   ├── hooks/        # 共通フック
+│   ├── stores/       # 共通グローバルストア (Jotai)
+│   └── lib/          # ユーティリティ (supabase/, queries/, api.ts, email.ts)
+├── agents/           # エージェントパイプライン (collector, analyst, battle-card, delivery)
+├── workers/          # Cloudflare Worker エントリーポイント (cron, workflow)
+├── supabase/         # マイグレーション
+├── wrangler.jsonc    # Cloudflare 設定
+├── open-next.config.ts
+└── package.json
 ```
 
 ## コマンド
@@ -40,6 +54,12 @@ pnpm lint:fix         # Biome lint + 自動修正
 pnpm typecheck        # TypeScript 型チェック
 pnpm deploy           # Cloudflare Workers デプロイ
 ```
+
+## Supabase クライアントパターン
+
+- **認証チェック:** `createClient()` (server.ts) → `getUser()` で認証確認
+- **DB 書き込み（API Routes）:** `createAdminClient()` (admin.ts) で service role クライアントを使用（RLS バイパス）
+- **クライアントサイド:** `createBrowserClient()` (client.ts)
 
 ## コーディングルール
 

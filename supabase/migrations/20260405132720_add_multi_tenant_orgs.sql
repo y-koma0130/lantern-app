@@ -155,7 +155,7 @@ CREATE POLICY "Org members can read their organization"
 
 CREATE POLICY "Authenticated users can create organizations"
   ON organizations FOR INSERT
-  WITH CHECK (auth.role() = 'authenticated');
+  WITH CHECK (auth.uid() IS NOT NULL);
 
 CREATE POLICY "Org owners can update their organization"
   ON organizations FOR UPDATE

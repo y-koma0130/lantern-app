@@ -1,50 +1,11 @@
-import { InviteMemberForm } from "@/features/settings/components/invite-member-form";
-import { MemberList } from "@/features/settings/components/member-list";
-import { PendingInvitations } from "@/features/settings/components/pending-invitations";
-import { getOrgContext } from "@/lib/queries/get-org-context";
-import { createClient } from "@/lib/supabase/server";
+import { MembersPage } from "@/features/settings/components/members-page";
 
-interface MembersPageProps {
+interface PageProps {
 	params: Promise<{ orgSlug: string }>;
 }
 
-export default async function MembersPage({ params }: MembersPageProps) {
+export default async function Page({ params }: PageProps) {
 	const { orgSlug } = await params;
-	const { orgId, userId, isOwner } = await getOrgContext(orgSlug);
-
-	const supabase = await createClient();
-
-	// Parallel: fetch members and invitations (if owner)
-	const [membersResult, invitationsResult] = await Promise.all([
-		supabase
-			.from("organization_members")
-			.select("id, user_id, role, created_at")
-			.eq("org_id", orgId)
-			.order("created_at", { ascending: true }),
-		isOwner
-			? supabase
-					.from("invitations")
-					.select("id, email, role, created_at, expires_at")
-					.eq("org_id", orgId)
-					.eq("status", "pending")
-					.order("created_at", { ascending: false })
-			: Promise.resolve({ data: [] }),
-	]);
-
-	const members = (membersResult.data ?? []).map((m) => ({
-		id: m.id,
-		userId: m.user_id,
-		role: m.role,
-		createdAt: m.created_at,
-	}));
-
-	const invitations = (invitationsResult.data ?? []) as {
-		id: string;
-		email: string;
-		role: string;
-		created_at: string;
-		expires_at: string;
-	}[];
 
 	return (
 		<div className="space-y-6">
@@ -54,12 +15,7 @@ export default async function MembersPage({ params }: MembersPageProps) {
 					Manage your organization members and invitations.
 				</p>
 			</div>
-
-			{isOwner && <InviteMemberForm orgId={orgId} />}
-
-			<MemberList members={members} orgId={orgId} currentUserId={userId} isOwner={isOwner} />
-
-			{isOwner && <PendingInvitations invitations={invitations} />}
+			<MembersPage orgSlug={orgSlug} />
 		</div>
 	);
 }

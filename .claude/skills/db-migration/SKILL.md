@@ -64,7 +64,7 @@ pnpm supabase db reset
 ### 4. TypeScript 型を再生成
 
 ```bash
-pnpm supabase gen types typescript --local > packages/agents/shared/database.types.ts
+pnpm supabase gen types typescript --local > agents/shared/database.types.ts
 ```
 
 ### 5. 確認チェックリスト

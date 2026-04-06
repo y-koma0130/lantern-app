@@ -12,12 +12,12 @@ argument-hint: <feature-name>
 ## 1. ディレクトリ作成
 
 ```bash
-mkdir -p apps/web/src/features/$ARGUMENTS/{components,hooks,stores}
+mkdir -p src/features/$ARGUMENTS/{components,hooks,stores}
 ```
 
 ## 2. ページコンポーネント作成
 
-`apps/web/src/features/$ARGUMENTS/components/$ARGUMENTS-page.tsx` を作成する。
+`src/features/$ARGUMENTS/components/$ARGUMENTS-page.tsx` を作成する。
 
 ```tsx
 export function [PascalCase]Page() {
@@ -34,7 +34,7 @@ export function [PascalCase]Page() {
 
 ## 3. app/ にルート追加
 
-`apps/web/app/$ARGUMENTS/page.tsx` を作成する。
+`app/$ARGUMENTS/page.tsx` を作成する。
 
 ```tsx
 import { [PascalCase]Page } from "@/features/$ARGUMENTS/components/$ARGUMENTS-page";
