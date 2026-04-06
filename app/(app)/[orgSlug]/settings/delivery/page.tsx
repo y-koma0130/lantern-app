@@ -10,8 +10,8 @@ export default async function Page({ params }: PageProps) {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h2 className="text-lg font-semibold text-[#172B4D]">Delivery Settings</h2>
-				<p className="mt-1 text-sm text-[#505F79]">
+				<h2 className="text-lg font-semibold text-text-primary">Delivery Settings</h2>
+				<p className="mt-1 text-sm text-text-secondary">
 					Configure how and when you receive competitive intelligence reports.
 				</p>
 			</div>

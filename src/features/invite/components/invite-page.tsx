@@ -20,7 +20,7 @@ export async function InvitePage({ token }: InvitePageProps) {
 	const isValid = invitation && invitation.status === "pending" && !isExpired;
 
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-[var(--color-background)] px-4">
+		<div className="flex min-h-screen items-center justify-center bg-surface-subtle px-4">
 			<div className="w-full max-w-sm">
 				{!invitation && (
 					<div className="text-center">
@@ -29,10 +29,8 @@ export async function InvitePage({ token }: InvitePageProps) {
 								&#x26A0;
 							</span>
 						</div>
-						<h1 className="text-2xl font-bold text-[var(--color-foreground)]">
-							Invitation Not Found
-						</h1>
-						<p className="mt-2 text-sm text-gray-500">
+						<h1 className="text-2xl font-bold text-text-primary">Invitation Not Found</h1>
+						<p className="mt-2 text-sm text-text-secondary">
 							This invitation link is invalid or has been removed.
 						</p>
 					</div>
@@ -45,7 +43,7 @@ export async function InvitePage({ token }: InvitePageProps) {
 								&#x23F0;
 							</span>
 						</div>
-						<h1 className="text-2xl font-bold text-[var(--color-foreground)]">
+						<h1 className="text-2xl font-bold text-text-primary">
 							{invitation.status === "accepted"
 								? "Already Accepted"
 								: invitation.status === "revoked"
@@ -54,7 +52,7 @@ export async function InvitePage({ token }: InvitePageProps) {
 										? "Invitation Expired"
 										: "Invalid Invitation"}
 						</h1>
-						<p className="mt-2 text-sm text-gray-500">
+						<p className="mt-2 text-sm text-text-secondary">
 							{invitation.status === "accepted"
 								? "This invitation has already been accepted."
 								: invitation.status === "revoked"
@@ -69,7 +67,7 @@ export async function InvitePage({ token }: InvitePageProps) {
 				{invitation && isValid && (
 					<div className="text-center">
 						<div className="mb-8">
-							<h1 className="text-2xl font-bold text-[var(--color-foreground)]">
+							<h1 className="text-2xl font-bold text-text-primary">
 								Join{" "}
 								{
 									(
@@ -81,7 +79,7 @@ export async function InvitePage({ token }: InvitePageProps) {
 									)?.name
 								}
 							</h1>
-							<p className="mt-2 text-sm text-gray-500">
+							<p className="mt-2 text-sm text-text-secondary">
 								You&apos;ve been invited to join as a {invitation.role}
 							</p>
 						</div>

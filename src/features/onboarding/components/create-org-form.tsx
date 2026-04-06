@@ -62,13 +62,13 @@ export function CreateOrgForm() {
 	return (
 		<form onSubmit={handleSubmit} className="space-y-4">
 			{error && (
-				<div className="rounded-[3px] border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+				<div className="rounded-[3px] border border-error-bg bg-error-bg p-3 text-sm text-error-text">
 					{error}
 				</div>
 			)}
 
 			<div>
-				<label htmlFor="org-name" className="mb-1 block text-sm font-medium text-[#172B4D]">
+				<label htmlFor="org-name" className="mb-1 block text-sm font-medium text-text-primary">
 					Organization name
 				</label>
 				<input
@@ -77,17 +77,17 @@ export function CreateOrgForm() {
 					value={name}
 					onChange={(e) => handleNameChange(e.target.value)}
 					required
-					className="w-full rounded-[3px] border border-[#DFE1E6] px-3 py-2 text-sm text-[#172B4D] shadow-sm focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] focus:outline-none"
+					className="w-full rounded-[3px] border border-border px-3 py-2 text-sm text-text-primary shadow-sm focus:border-border-focus focus:ring-1 focus:ring-brand focus:outline-none"
 					placeholder="Acme Security"
 				/>
 			</div>
 
 			<div>
-				<label htmlFor="org-slug" className="mb-1 block text-sm font-medium text-[#172B4D]">
+				<label htmlFor="org-slug" className="mb-1 block text-sm font-medium text-text-primary">
 					URL slug
 				</label>
-				<div className="flex items-center rounded-[3px] border border-[#DFE1E6] bg-white shadow-sm focus-within:border-[#0052CC] focus-within:ring-1 focus-within:ring-[#0052CC]">
-					<span className="pl-3 text-sm text-[#505F79]">lantern.app/</span>
+				<div className="flex items-center rounded-[3px] border border-border bg-white shadow-sm focus-within:border-brand focus-within:ring-1 focus-within:ring-brand">
+					<span className="pl-3 text-sm text-text-secondary">lantern.app/</span>
 					<input
 						id="org-slug"
 						type="text"
@@ -95,17 +95,19 @@ export function CreateOrgForm() {
 						onChange={(e) => handleSlugChange(e.target.value)}
 						required
 						pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
-						className="flex-1 rounded-r-[3px] border-0 px-1 py-2 text-sm text-[#172B4D] focus:ring-0 focus:outline-none"
+						className="flex-1 rounded-r-[3px] border-0 px-1 py-2 text-sm text-text-primary focus:ring-0 focus:outline-none"
 						placeholder="acme-security"
 					/>
 				</div>
-				<p className="mt-1 text-xs text-[#505F79]">Lowercase letters, numbers, and hyphens only.</p>
+				<p className="mt-1 text-xs text-text-secondary">
+					Lowercase letters, numbers, and hyphens only.
+				</p>
 			</div>
 
 			<button
 				type="submit"
 				disabled={loading || !name || !slug}
-				className="w-full cursor-pointer rounded-[3px] bg-[#0052CC] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#0065FF] focus:ring-2 focus:ring-[#0052CC] focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+				className="w-full cursor-pointer rounded-[3px] bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-hover focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{loading ? "Creating..." : "Create Organization"}
 			</button>

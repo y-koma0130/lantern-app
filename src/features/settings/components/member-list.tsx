@@ -79,8 +79,8 @@ export function MemberList({ members, orgId, currentUserId, isOwner }: MemberLis
 
 	if (members.length === 0) {
 		return (
-			<div className="rounded-[3px] border border-[#DFE1E6] bg-white p-8 text-center">
-				<p className="text-sm text-[#505F79]">No members found.</p>
+			<div className="rounded-[3px] border border-border bg-white p-8 text-center">
+				<p className="text-sm text-text-secondary">No members found.</p>
 			</div>
 		);
 	}
@@ -88,26 +88,26 @@ export function MemberList({ members, orgId, currentUserId, isOwner }: MemberLis
 	return (
 		<div>
 			{error && (
-				<div className="mb-4 rounded-[3px] border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+				<div className="mb-4 rounded-[3px] border border-error-bg bg-error-bg p-3 text-sm text-error-text">
 					{error}
 				</div>
 			)}
 
-			<div className="overflow-hidden rounded-[3px] border border-[#DFE1E6]">
+			<div className="overflow-hidden rounded-[3px] border border-border">
 				<table className="w-full">
 					<thead>
-						<tr className="bg-[#FAFBFC]">
-							<th className="px-4 py-3 text-left text-xs font-semibold text-[#505F79] uppercase tracking-wider">
+						<tr className="bg-surface-subtle">
+							<th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
 								User ID
 							</th>
-							<th className="px-4 py-3 text-left text-xs font-semibold text-[#505F79] uppercase tracking-wider">
+							<th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
 								Role
 							</th>
-							<th className="px-4 py-3 text-left text-xs font-semibold text-[#505F79] uppercase tracking-wider">
+							<th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
 								Joined
 							</th>
 							{isOwner && (
-								<th className="px-4 py-3 text-right text-xs font-semibold text-[#505F79] uppercase tracking-wider">
+								<th className="px-4 py-3 text-right text-xs font-semibold text-text-secondary uppercase tracking-wider">
 									Actions
 								</th>
 							)}
@@ -118,54 +118,54 @@ export function MemberList({ members, orgId, currentUserId, isOwner }: MemberLis
 							const isSelf = member.userId === currentUserId;
 
 							return (
-								<tr key={member.id} className={index % 2 === 0 ? "bg-white" : "bg-[#FAFBFC]"}>
-									<td className="px-4 py-3 text-sm text-[#172B4D]">
+								<tr key={member.id} className={index % 2 === 0 ? "bg-white" : "bg-surface-subtle"}>
+									<td className="px-4 py-3 text-sm text-text-primary">
 										<span className="font-mono text-xs">{member.userId.slice(0, 8)}...</span>
 										{isSelf && (
-											<span className="ml-2 rounded-[3px] bg-[#DEEBFF] px-1.5 py-0.5 text-xs font-medium text-[#0052CC]">
+											<span className="ml-2 rounded-[3px] bg-brand-light px-1.5 py-0.5 text-xs font-medium text-brand">
 												You
 											</span>
 										)}
 									</td>
-									<td className="px-4 py-3 text-sm text-[#505F79]">
+									<td className="px-4 py-3 text-sm text-text-secondary">
 										{isOwner && !isSelf ? (
 											<select
 												value={member.role}
 												onChange={(e) => handleRoleChange(member.userId, e.target.value)}
 												disabled={updatingId === member.userId}
-												className="rounded-[3px] border border-[#DFE1E6] bg-white px-2 py-1 text-xs text-[#172B4D] focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] focus:outline-none disabled:opacity-50"
+												className="rounded-[3px] border border-border bg-white px-2 py-1 text-xs text-text-primary focus:border-border-focus focus:ring-1 focus:ring-brand focus:outline-none disabled:opacity-50"
 											>
 												<option value="owner">Owner</option>
 												<option value="member">Member</option>
 											</select>
 										) : (
-											<span className="inline-flex items-center rounded-[3px] bg-[#FAFBFC] px-2 py-0.5 text-xs font-medium text-[#505F79] capitalize">
+											<span className="inline-flex items-center rounded-[3px] bg-surface-subtle px-2 py-0.5 text-xs font-medium text-text-secondary capitalize">
 												{member.role}
 											</span>
 										)}
 									</td>
-									<td className="px-4 py-3 text-sm text-[#505F79]">
+									<td className="px-4 py-3 text-sm text-text-secondary">
 										{new Date(member.createdAt).toLocaleDateString()}
 									</td>
 									{isOwner && (
 										<td className="px-4 py-3 text-right">
 											{isSelf ? (
-												<span className="text-xs text-[#A5ADBA]">--</span>
+												<span className="text-xs text-text-disabled">--</span>
 											) : confirmRemoveId === member.userId ? (
 												<span className="inline-flex items-center gap-2">
-													<span className="text-xs text-[#505F79]">Remove?</span>
+													<span className="text-xs text-text-secondary">Remove?</span>
 													<button
 														type="button"
 														onClick={() => handleRemove(member.userId)}
 														disabled={removingId === member.userId}
-														className="cursor-pointer rounded-[3px] bg-[#FF5630] px-2 py-1 text-xs font-medium text-white hover:bg-[#DE350B] disabled:opacity-50"
+														className="cursor-pointer rounded-[3px] bg-error px-2 py-1 text-xs font-medium text-white hover:bg-error-hover disabled:opacity-50"
 													>
 														{removingId === member.userId ? "..." : "Yes"}
 													</button>
 													<button
 														type="button"
 														onClick={() => setConfirmRemoveId(null)}
-														className="cursor-pointer rounded-[3px] border border-[#DFE1E6] bg-white px-2 py-1 text-xs font-medium text-[#505F79] hover:bg-[#FAFBFC]"
+														className="cursor-pointer rounded-[3px] border border-border bg-white px-2 py-1 text-xs font-medium text-text-secondary hover:bg-surface-subtle"
 													>
 														No
 													</button>
@@ -174,7 +174,7 @@ export function MemberList({ members, orgId, currentUserId, isOwner }: MemberLis
 												<button
 													type="button"
 													onClick={() => setConfirmRemoveId(member.userId)}
-													className="cursor-pointer rounded-[3px] border border-[#DFE1E6] bg-white px-3 py-1 text-xs font-medium text-[#FF5630] hover:bg-red-50"
+													className="cursor-pointer rounded-[3px] border border-border bg-white px-3 py-1 text-xs font-medium text-error hover:bg-error-bg"
 												>
 													Remove
 												</button>

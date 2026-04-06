@@ -10,10 +10,10 @@ interface ExportButtonsProps {
 function DisabledButtonWithTooltip({ label, tooltip }: { label: string; tooltip: string }) {
 	return (
 		<span className="group relative inline-block">
-			<span className="inline-block cursor-not-allowed rounded-[3px] border border-[#DFE1E6] bg-[#FAFBFC] px-3 py-1.5 text-xs font-medium text-[#A5ADBA]">
+			<span className="inline-block cursor-not-allowed rounded-[3px] border border-border bg-surface-subtle px-3 py-1.5 text-xs font-medium text-text-disabled">
 				{label}
 			</span>
-			<span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-max -translate-x-1/2 rounded-[3px] bg-[#172B4D] px-2 py-1 text-xs text-white group-hover:block">
+			<span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden w-max -translate-x-1/2 rounded-[3px] bg-text-primary px-2 py-1 text-xs text-white group-hover:block">
 				{tooltip}
 			</span>
 		</span>
@@ -46,7 +46,7 @@ export function ExportButtons({ orgId, canExport }: ExportButtonsProps) {
 	}
 
 	const enabledClass =
-		"cursor-pointer rounded-[3px] border border-[#DFE1E6] bg-white px-3 py-1.5 text-xs font-medium text-[#505F79] hover:bg-[#F4F5F7] disabled:opacity-50";
+		"cursor-pointer rounded-[3px] border border-border bg-white px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface-hover disabled:opacity-50";
 	const upgradeTooltip = "Upgrade to Pro or higher to export CSV";
 
 	return (

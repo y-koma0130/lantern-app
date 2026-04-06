@@ -49,7 +49,9 @@ export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPagePr
 	return (
 		<>
 			<section className="mb-8">
-				<h2 className="mb-4 text-lg font-semibold text-[#172B4D]">This Week&apos;s Top Changes</h2>
+				<h2 className="mb-4 text-lg font-semibold text-text-primary">
+					This Week&apos;s Top Changes
+				</h2>
 				{insights.length > 0 ? (
 					<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
 						{insights.map((insight) => {
@@ -66,8 +68,8 @@ export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPagePr
 						})}
 					</div>
 				) : (
-					<div className="rounded-[3px] border border-[#DFE1E6] bg-white px-6 py-10 text-center">
-						<p className="text-sm text-[#97A0AF]">
+					<div className="rounded-[3px] border border-border bg-white px-6 py-10 text-center">
+						<p className="text-sm text-text-tertiary">
 							No insights yet. Check back after the next analysis run.
 						</p>
 					</div>
@@ -75,7 +77,7 @@ export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPagePr
 			</section>
 
 			<section>
-				<h2 className="mb-4 text-lg font-semibold text-[#172B4D]">Recent Digests</h2>
+				<h2 className="mb-4 text-lg font-semibold text-text-primary">Recent Digests</h2>
 				{digests.length > 0 ? (
 					<div className="flex flex-col gap-3">
 						{digests.map((digest) => (
@@ -90,8 +92,8 @@ export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPagePr
 						))}
 					</div>
 				) : (
-					<div className="rounded-[3px] border border-[#DFE1E6] bg-white px-6 py-10 text-center">
-						<p className="text-sm text-[#97A0AF]">
+					<div className="rounded-[3px] border border-border bg-white px-6 py-10 text-center">
+						<p className="text-sm text-text-tertiary">
 							No digests yet. Your first digest will appear here after the weekly pipeline runs.
 						</p>
 					</div>

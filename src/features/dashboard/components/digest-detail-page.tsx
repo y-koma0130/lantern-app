@@ -25,11 +25,11 @@ export async function DigestDetailPage({ orgSlug, digestId }: DigestDetailPagePr
 	}
 
 	return (
-		<div className="min-h-full bg-[#FAFBFC]">
+		<div className="min-h-full bg-surface-subtle">
 			<div className="mx-auto max-w-4xl px-6 py-8">
 				<Link
 					href={`/${orgSlug}/dashboard`}
-					className="mb-6 inline-flex items-center gap-1 text-sm text-[#0052CC] hover:underline"
+					className="mb-6 inline-flex items-center gap-1 text-sm text-brand hover:underline"
 				>
 					<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
 						<path

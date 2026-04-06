@@ -40,7 +40,7 @@ export async function AppShell({ children }: AppShellProps) {
 	}
 
 	return (
-		<div className="flex h-screen flex-col bg-[#FAFBFC]">
+		<div className="flex h-screen flex-col bg-surface-subtle">
 			<Header
 				user={{ email: user.email ?? "" }}
 				orgs={orgs.map((o) => ({ id: o.id, name: o.name, slug: o.slug }))}

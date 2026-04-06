@@ -41,7 +41,7 @@ function CrossIcon() {
 function FeatureRow({ enabled, label }: { enabled: boolean; label: string }) {
 	return (
 		<li
-			className={`flex items-center gap-2 text-sm ${enabled ? "text-[#172B4D]" : "text-[#A5ADBA]"}`}
+			className={`flex items-center gap-2 text-sm ${enabled ? "text-text-primary" : "text-text-disabled"}`}
 		>
 			{enabled ? <CheckIcon /> : <CrossIcon />}
 			{label}
@@ -79,23 +79,22 @@ export function PlanCard({
 
 	return (
 		<div
-			className="flex flex-col rounded-[3px] bg-white p-6"
-			style={{
-				border: isCurrentPlan ? "2px solid #0052CC" : "1px solid #DFE1E6",
-			}}
+			className={`flex flex-col rounded-[3px] bg-white p-6 ${
+				isCurrentPlan ? "border-2 border-brand" : "border border-border"
+			}`}
 		>
 			<div className="mb-4 flex items-center gap-2">
-				<h3 className="text-base font-semibold text-[#172B4D]">{plan.name}</h3>
+				<h3 className="text-base font-semibold text-text-primary">{plan.name}</h3>
 				{isCurrentPlan && (
-					<span className="rounded-[3px] bg-[#DEEBFF] px-2 py-0.5 text-xs font-medium text-[#0052CC]">
+					<span className="rounded-[3px] bg-brand-light px-2 py-0.5 text-xs font-medium text-brand">
 						Current
 					</span>
 				)}
 			</div>
 
 			<p className="mb-4">
-				<span className="text-2xl font-bold text-[#172B4D]">${price}</span>
-				<span className="text-sm text-[#505F79]">
+				<span className="text-2xl font-bold text-text-primary">${price}</span>
+				<span className="text-sm text-text-secondary">
 					{price === 0 ? "" : `/${interval === "monthly" ? "mo" : "yr"}`}
 				</span>
 			</p>
@@ -112,7 +111,7 @@ export function PlanCard({
 				<FeatureRow enabled={plan.battleCards} label="Battle cards" />
 				<FeatureRow enabled={plan.csvExport} label="CSV export" />
 				<FeatureRow enabled={plan.archiveDays !== 0} label={formatArchive(plan.archiveDays)} />
-				<li className="pt-1 text-xs text-[#97A0AF]">{plan.support} support</li>
+				<li className="pt-1 text-xs text-text-tertiary">{plan.support} support</li>
 			</ul>
 
 			{onSelect ? (
@@ -120,12 +119,12 @@ export function PlanCard({
 					type="button"
 					onClick={onSelect}
 					disabled={disabled || loading}
-					className="w-full cursor-pointer rounded-[3px] bg-[#0052CC] px-4 py-2 text-sm font-medium text-white hover:bg-[#0065FF] disabled:cursor-not-allowed disabled:opacity-50"
+					className="w-full cursor-pointer rounded-[3px] bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
 				>
 					{loading ? "Redirecting..." : actionLabel}
 				</button>
 			) : (
-				<div className="w-full rounded-[3px] border border-[#DFE1E6] px-4 py-2 text-center text-sm font-medium text-[#505F79]">
+				<div className="w-full rounded-[3px] border border-border px-4 py-2 text-center text-sm font-medium text-text-secondary">
 					{actionLabel}
 				</div>
 			)}

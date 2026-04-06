@@ -31,7 +31,7 @@ export function OrgSwitcher({ orgs }: OrgSwitcherProps) {
 			<button
 				type="button"
 				onClick={() => setOpen(!open)}
-				className="flex cursor-pointer items-center gap-2 rounded-[3px] border border-[#DFE1E6] bg-white px-3 py-1.5 text-sm text-[#172B4D] hover:bg-[#EBECF0]"
+				className="flex cursor-pointer items-center gap-2 rounded-[3px] border border-border bg-white px-3 py-1.5 text-sm text-text-primary hover:bg-surface-hover"
 			>
 				<span>{currentOrg?.name ?? "Select organization"}</span>
 				<svg
@@ -53,14 +53,14 @@ export function OrgSwitcher({ orgs }: OrgSwitcherProps) {
 			</button>
 
 			{open && (
-				<div className="absolute top-full left-0 z-50 mt-1 w-64 rounded-[3px] border border-[#DFE1E6] bg-white shadow-lg">
+				<div className="absolute top-full left-0 z-50 mt-1 w-64 rounded-[3px] border border-border bg-white shadow-lg">
 					<div className="py-1">
 						{orgs.map((org) => (
 							<Link
 								key={org.id}
 								href={`/${org.slug}/dashboard`}
 								onClick={() => setOpen(false)}
-								className="flex items-center gap-2 px-3 py-2 text-sm text-[#172B4D] hover:bg-[#EBECF0]"
+								className="flex items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-surface-hover"
 							>
 								{org.slug === currentOrgSlug && (
 									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -78,11 +78,11 @@ export function OrgSwitcher({ orgs }: OrgSwitcherProps) {
 							</Link>
 						))}
 					</div>
-					<div className="border-t border-[#DFE1E6]">
+					<div className="border-t border-border">
 						<Link
 							href="/onboarding"
 							onClick={() => setOpen(false)}
-							className="flex items-center gap-2 px-3 py-2 text-sm text-[#0052CC] hover:bg-[#EBECF0]"
+							className="flex items-center gap-2 px-3 py-2 text-sm text-brand hover:bg-surface-hover"
 						>
 							<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
 								<path d="M8 3V13M3 8H13" stroke="#0052CC" strokeWidth="1.5" strokeLinecap="round" />

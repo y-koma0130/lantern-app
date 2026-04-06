@@ -47,27 +47,30 @@ export function InviteMemberForm({ orgId }: InviteMemberFormProps) {
 	}
 
 	const inputClass =
-		"w-full rounded-[3px] border border-[#DFE1E6] px-3 py-2 text-sm text-[#172B4D] shadow-sm focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] focus:outline-none h-9";
+		"w-full rounded-[3px] border border-border px-3 py-2 text-sm text-text-primary shadow-sm focus:border-border-focus focus:ring-1 focus:ring-brand focus:outline-none h-9";
 
 	return (
-		<div className="rounded-[3px] border border-[#DFE1E6] bg-white p-4">
-			<h3 className="mb-4 text-sm font-semibold text-[#172B4D]">Invite Member</h3>
+		<div className="rounded-[3px] border border-border bg-white p-4">
+			<h3 className="mb-4 text-sm font-semibold text-text-primary">Invite Member</h3>
 
 			{error && (
-				<div className="mb-4 rounded-[3px] border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+				<div className="mb-4 rounded-[3px] border border-error-bg bg-error-bg p-3 text-sm text-error-text">
 					{error}
 				</div>
 			)}
 
 			{success && (
-				<div className="mb-4 rounded-[3px] border border-green-200 bg-green-50 p-3 text-sm text-green-700">
+				<div className="mb-4 rounded-[3px] border border-success-bg bg-success-bg p-3 text-sm text-success-text">
 					Invitation sent successfully.
 				</div>
 			)}
 
 			<form onSubmit={handleSubmit} className="flex items-end gap-3">
 				<div className="flex-1">
-					<label htmlFor="invite-email" className="mb-1 block text-sm font-medium text-[#172B4D]">
+					<label
+						htmlFor="invite-email"
+						className="mb-1 block text-sm font-medium text-text-primary"
+					>
 						Email address
 					</label>
 					<input
@@ -82,7 +85,7 @@ export function InviteMemberForm({ orgId }: InviteMemberFormProps) {
 				</div>
 
 				<div className="w-32">
-					<label htmlFor="invite-role" className="mb-1 block text-sm font-medium text-[#172B4D]">
+					<label htmlFor="invite-role" className="mb-1 block text-sm font-medium text-text-primary">
 						Role
 					</label>
 					<select
@@ -99,7 +102,7 @@ export function InviteMemberForm({ orgId }: InviteMemberFormProps) {
 				<button
 					type="submit"
 					disabled={loading || !email}
-					className="cursor-pointer rounded-[3px] bg-[#0052CC] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#0065FF] focus:ring-2 focus:ring-[#0052CC] focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 h-9"
+					className="cursor-pointer rounded-[3px] bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-hover focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 h-9"
 				>
 					{loading ? "Sending..." : "Send Invite"}
 				</button>

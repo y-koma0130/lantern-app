@@ -16,10 +16,10 @@ export default async function Page({ params }: PageProps) {
 	const { orgId, orgPlan } = await getOrgContext(orgSlug);
 
 	return (
-		<div className="min-h-full bg-[#FAFBFC]">
+		<div className="min-h-full bg-surface-subtle">
 			<div className="mx-auto max-w-4xl px-6 py-8">
 				<div className="mb-6 flex items-center justify-between">
-					<h1 className="text-xl font-semibold text-[#172B4D]">Dashboard</h1>
+					<h1 className="text-xl font-semibold text-text-primary">Dashboard</h1>
 					<ExportButtons orgId={orgId} canExport={orgPlan === "pro" || orgPlan === "team"} />
 				</div>
 				<DashboardPage orgId={orgId} orgSlug={orgSlug} orgPlan={orgPlan} />

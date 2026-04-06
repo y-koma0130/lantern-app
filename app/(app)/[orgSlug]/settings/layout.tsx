@@ -11,7 +11,7 @@ export default async function SettingsLayout({ children, params }: SettingsLayou
 
 	return (
 		<div className="mx-auto max-w-4xl px-6 py-8">
-			<h1 className="mb-6 text-2xl font-bold text-[#172B4D]">Settings</h1>
+			<h1 className="mb-6 text-2xl font-bold text-text-primary">Settings</h1>
 			<SettingsNav orgSlug={orgSlug} />
 			<div className="mt-6">{children}</div>
 		</div>

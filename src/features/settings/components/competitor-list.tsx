@@ -52,8 +52,8 @@ export function CompetitorList({ competitors, orgId, isOwner }: CompetitorListPr
 
 	if (competitors.length === 0) {
 		return (
-			<div className="rounded-[3px] border border-[#DFE1E6] bg-white p-8 text-center">
-				<p className="text-sm text-[#505F79]">
+			<div className="rounded-[3px] border border-border bg-white p-8 text-center">
+				<p className="text-sm text-text-secondary">
 					No competitors added yet. Add your first competitor to start tracking.
 				</p>
 			</div>
@@ -63,26 +63,26 @@ export function CompetitorList({ competitors, orgId, isOwner }: CompetitorListPr
 	return (
 		<div>
 			{error && (
-				<div className="mb-4 rounded-[3px] border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+				<div className="mb-4 rounded-[3px] border border-error-bg bg-error-bg p-3 text-sm text-error-text">
 					{error}
 				</div>
 			)}
 
-			<div className="overflow-hidden rounded-[3px] border border-[#DFE1E6]">
+			<div className="overflow-hidden rounded-[3px] border border-border">
 				<table className="w-full">
 					<thead>
-						<tr className="bg-[#FAFBFC]">
-							<th className="px-4 py-3 text-left text-xs font-semibold text-[#505F79] uppercase tracking-wider">
+						<tr className="bg-surface-subtle">
+							<th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
 								Name
 							</th>
-							<th className="px-4 py-3 text-left text-xs font-semibold text-[#505F79] uppercase tracking-wider">
+							<th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
 								Website
 							</th>
-							<th className="px-4 py-3 text-left text-xs font-semibold text-[#505F79] uppercase tracking-wider">
+							<th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
 								Niche
 							</th>
 							{isOwner && (
-								<th className="px-4 py-3 text-right text-xs font-semibold text-[#505F79] uppercase tracking-wider">
+								<th className="px-4 py-3 text-right text-xs font-semibold text-text-secondary uppercase tracking-wider">
 									Actions
 								</th>
 							)}
@@ -90,36 +90,41 @@ export function CompetitorList({ competitors, orgId, isOwner }: CompetitorListPr
 					</thead>
 					<tbody>
 						{competitors.map((competitor, index) => (
-							<tr key={competitor.id} className={index % 2 === 0 ? "bg-white" : "bg-[#FAFBFC]"}>
-								<td className="px-4 py-3 text-sm font-medium text-[#172B4D]">{competitor.name}</td>
-								<td className="px-4 py-3 text-sm text-[#505F79]">
+							<tr
+								key={competitor.id}
+								className={index % 2 === 0 ? "bg-white" : "bg-surface-subtle"}
+							>
+								<td className="px-4 py-3 text-sm font-medium text-text-primary">
+									{competitor.name}
+								</td>
+								<td className="px-4 py-3 text-sm text-text-secondary">
 									<a
 										href={competitor.website}
 										target="_blank"
 										rel="noopener noreferrer"
-										className="text-[#0052CC] hover:underline"
+										className="text-brand hover:underline"
 									>
 										{competitor.website}
 									</a>
 								</td>
-								<td className="px-4 py-3 text-sm text-[#505F79]">{competitor.niche}</td>
+								<td className="px-4 py-3 text-sm text-text-secondary">{competitor.niche}</td>
 								{isOwner && (
 									<td className="px-4 py-3 text-right">
 										{confirmId === competitor.id ? (
 											<span className="inline-flex items-center gap-2">
-												<span className="text-xs text-[#505F79]">Delete?</span>
+												<span className="text-xs text-text-secondary">Delete?</span>
 												<button
 													type="button"
 													onClick={() => handleDelete(competitor.id)}
 													disabled={deletingId === competitor.id}
-													className="cursor-pointer rounded-[3px] bg-[#FF5630] px-2 py-1 text-xs font-medium text-white hover:bg-[#DE350B] disabled:opacity-50"
+													className="cursor-pointer rounded-[3px] bg-error px-2 py-1 text-xs font-medium text-white hover:bg-error-hover disabled:opacity-50"
 												>
 													{deletingId === competitor.id ? "..." : "Yes"}
 												</button>
 												<button
 													type="button"
 													onClick={() => setConfirmId(null)}
-													className="cursor-pointer rounded-[3px] border border-[#DFE1E6] bg-white px-2 py-1 text-xs font-medium text-[#505F79] hover:bg-[#FAFBFC]"
+													className="cursor-pointer rounded-[3px] border border-border bg-white px-2 py-1 text-xs font-medium text-text-secondary hover:bg-surface-subtle"
 												>
 													No
 												</button>
@@ -128,7 +133,7 @@ export function CompetitorList({ competitors, orgId, isOwner }: CompetitorListPr
 											<button
 												type="button"
 												onClick={() => setConfirmId(competitor.id)}
-												className="cursor-pointer rounded-[3px] border border-[#DFE1E6] bg-white px-3 py-1 text-xs font-medium text-[#FF5630] hover:bg-red-50"
+												className="cursor-pointer rounded-[3px] border border-border bg-white px-3 py-1 text-xs font-medium text-error hover:bg-error-bg"
 											>
 												Delete
 											</button>

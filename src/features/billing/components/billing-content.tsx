@@ -65,20 +65,20 @@ export function BillingContent({
 	return (
 		<div className="space-y-6">
 			{success && (
-				<div className="rounded-[3px] bg-[#E3FCEF] px-4 py-3 text-sm font-medium text-[#006644]">
+				<div className="rounded-[3px] bg-success-bg px-4 py-3 text-sm font-medium text-success-text">
 					Subscription activated! Your plan has been updated.
 				</div>
 			)}
 
 			{canceled && (
-				<div className="rounded-[3px] bg-[#FFFAE6] px-4 py-3 text-sm font-medium text-[#172B4D]">
+				<div className="rounded-[3px] bg-warning-bg px-4 py-3 text-sm font-medium text-text-primary">
 					Checkout was canceled. No changes were made to your subscription.
 				</div>
 			)}
 
-			<div className="rounded-[3px] border border-[#DFE1E6] bg-white p-4">
-				<p className="text-sm text-[#505F79]">Current plan</p>
-				<p className="text-lg font-semibold text-[#172B4D]">{currentPlanInfo?.name ?? "Free"}</p>
+			<div className="rounded-[3px] border border-border bg-white p-4">
+				<p className="text-sm text-text-secondary">Current plan</p>
+				<p className="text-lg font-semibold text-text-primary">{currentPlanInfo?.name ?? "Free"}</p>
 			</div>
 
 			<div className="flex items-center justify-center gap-2">
@@ -87,8 +87,8 @@ export function BillingContent({
 					onClick={() => setInterval("monthly")}
 					className={`cursor-pointer rounded-[3px] px-4 py-2 text-sm font-medium ${
 						interval === "monthly"
-							? "bg-[#0052CC] text-white"
-							: "border border-[#DFE1E6] bg-white text-[#505F79] hover:bg-[#F4F5F7]"
+							? "bg-brand text-white"
+							: "border border-border bg-white text-text-secondary hover:bg-surface-hover"
 					}`}
 				>
 					Monthly
@@ -98,8 +98,8 @@ export function BillingContent({
 					onClick={() => setInterval("yearly")}
 					className={`cursor-pointer rounded-[3px] px-4 py-2 text-sm font-medium ${
 						interval === "yearly"
-							? "bg-[#0052CC] text-white"
-							: "border border-[#DFE1E6] bg-white text-[#505F79] hover:bg-[#F4F5F7]"
+							? "bg-brand text-white"
+							: "border border-border bg-white text-text-secondary hover:bg-surface-hover"
 					}`}
 				>
 					Yearly
@@ -143,7 +143,7 @@ export function BillingContent({
 					type="button"
 					onClick={handlePortal}
 					disabled={loadingPortal}
-					className="cursor-pointer rounded-[3px] border border-[#DFE1E6] bg-white px-4 py-2 text-sm font-medium text-[#172B4D] hover:bg-[#F4F5F7] disabled:opacity-50"
+					className="cursor-pointer rounded-[3px] border border-border bg-white px-4 py-2 text-sm font-medium text-text-primary hover:bg-surface-hover disabled:opacity-50"
 				>
 					{loadingPortal ? "Redirecting..." : "Manage Subscription"}
 				</button>

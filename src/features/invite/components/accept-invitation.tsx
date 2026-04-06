@@ -71,26 +71,26 @@ export function AcceptInvitation({ token, email, orgName }: AcceptInvitationProp
 	}, [token, router]);
 
 	if (authState === "loading") {
-		return <div className="py-4 text-sm text-gray-500">Checking authentication...</div>;
+		return <div className="py-4 text-sm text-text-secondary">Checking authentication...</div>;
 	}
 
 	if (authState === "unauthenticated") {
 		const nextParam = encodeURIComponent(pathname);
 		return (
 			<div className="space-y-3">
-				<p className="text-sm text-gray-500">
+				<p className="text-sm text-text-secondary">
 					Sign in or create an account to accept this invitation.
 				</p>
 				<div className="flex flex-col gap-2">
 					<Link
 						href={`/login?next=${nextParam}`}
-						className="block w-full rounded-md bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+						className="block w-full rounded-[3px] bg-brand px-4 py-2 text-center text-sm font-medium text-white shadow-sm hover:bg-brand-hover"
 					>
 						Sign in
 					</Link>
 					<Link
 						href={`/signup?next=${nextParam}`}
-						className="block w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-center text-sm font-medium text-[var(--color-foreground)] shadow-sm hover:bg-gray-50"
+						className="block w-full rounded-[3px] border border-border bg-white px-4 py-2 text-center text-sm font-medium text-text-primary shadow-sm hover:bg-surface-hover"
 					>
 						Create account
 					</Link>
@@ -101,7 +101,7 @@ export function AcceptInvitation({ token, email, orgName }: AcceptInvitationProp
 
 	if (authState === "email-mismatch") {
 		return (
-			<div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+			<div className="rounded-[3px] border border-error-bg bg-error-bg p-4 text-sm text-error-text">
 				<p className="font-medium">Email mismatch</p>
 				<p className="mt-1">
 					This invitation was sent to <strong>{email}</strong>. Please sign in with that email
@@ -114,7 +114,7 @@ export function AcceptInvitation({ token, email, orgName }: AcceptInvitationProp
 	return (
 		<div className="space-y-3">
 			{error && (
-				<div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+				<div className="rounded-[3px] border border-error-bg bg-error-bg p-3 text-sm text-error-text">
 					{error}
 				</div>
 			)}
@@ -122,7 +122,7 @@ export function AcceptInvitation({ token, email, orgName }: AcceptInvitationProp
 				type="button"
 				onClick={handleAccept}
 				disabled={accepting}
-				className="w-full cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+				className="w-full cursor-pointer rounded-[3px] bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-hover focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{accepting ? "Joining..." : `Accept & Join ${orgName}`}
 			</button>

@@ -33,19 +33,19 @@ export function LoginForm() {
 		router.refresh();
 	}
 
+	const inputClass =
+		"w-full rounded-[3px] border border-border px-3 py-2 text-sm text-text-primary shadow-sm focus:border-border-focus focus:ring-1 focus:ring-brand focus:outline-none h-9";
+
 	return (
 		<form onSubmit={handleSubmit} className="space-y-4">
 			{error && (
-				<div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+				<div className="rounded-[3px] border border-error-bg bg-error-bg p-3 text-sm text-error-text">
 					{error}
 				</div>
 			)}
 
 			<div>
-				<label
-					htmlFor="email"
-					className="mb-1 block text-sm font-medium text-[var(--color-foreground)]"
-				>
+				<label htmlFor="email" className="mb-1 block text-sm font-medium text-text-primary">
 					Email
 				</label>
 				<input
@@ -55,16 +55,13 @@ export function LoginForm() {
 					onChange={(e) => setEmail(e.target.value)}
 					required
 					autoComplete="email"
-					className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					className={inputClass}
 					placeholder="you@example.com"
 				/>
 			</div>
 
 			<div>
-				<label
-					htmlFor="password"
-					className="mb-1 block text-sm font-medium text-[var(--color-foreground)]"
-				>
+				<label htmlFor="password" className="mb-1 block text-sm font-medium text-text-primary">
 					Password
 				</label>
 				<input
@@ -74,7 +71,7 @@ export function LoginForm() {
 					onChange={(e) => setPassword(e.target.value)}
 					required
 					autoComplete="current-password"
-					className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+					className={inputClass}
 					placeholder="Enter your password"
 				/>
 			</div>
@@ -82,14 +79,14 @@ export function LoginForm() {
 			<button
 				type="submit"
 				disabled={loading}
-				className="w-full cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+				className="w-full cursor-pointer rounded-[3px] bg-brand px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-hover focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{loading ? "Signing in..." : "Sign in"}
 			</button>
 
-			<p className="text-center text-sm text-gray-500">
+			<p className="text-center text-sm text-text-secondary">
 				Don&apos;t have an account?{" "}
-				<Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+				<Link href="/signup" className="font-medium text-brand hover:underline">
 					Create account
 				</Link>
 			</p>

@@ -13,7 +13,7 @@ export default async function Page({ params }: PageProps) {
 	const { orgSlug, digestId } = await params;
 
 	return (
-		<div className="min-h-full bg-[#FAFBFC]">
+		<div className="min-h-full bg-surface-subtle">
 			<div className="mx-auto max-w-4xl px-6 py-8">
 				<DigestDetailPage orgSlug={orgSlug} digestId={digestId} />
 			</div>

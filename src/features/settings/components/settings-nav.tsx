@@ -17,7 +17,7 @@ export function SettingsNav({ orgSlug }: SettingsNavProps) {
 	const pathname = usePathname();
 
 	return (
-		<nav className="border-b border-[#DFE1E6]">
+		<nav className="border-b border-border">
 			<div className="flex gap-0">
 				{tabs.map((tab) => {
 					const href = `/${orgSlug}/settings/${tab.segment}`;
@@ -28,13 +28,11 @@ export function SettingsNav({ orgSlug }: SettingsNavProps) {
 							key={tab.segment}
 							href={href}
 							className={`relative px-4 py-3 text-sm font-medium transition-colors ${
-								isActive ? "text-[#0052CC]" : "text-[#505F79] hover:text-[#172B4D]"
+								isActive ? "text-brand" : "text-text-secondary hover:text-text-primary"
 							}`}
 						>
 							{tab.label}
-							{isActive && (
-								<span className="absolute right-0 bottom-0 left-0 h-[2px] bg-[#0052CC]" />
-							)}
+							{isActive && <span className="absolute right-0 bottom-0 left-0 h-[2px] bg-brand" />}
 						</Link>
 					);
 				})}

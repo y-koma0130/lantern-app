@@ -1,20 +1,58 @@
 @import "tailwindcss";
 
-:root {
-	--color-background: #ffffff;
-	--color-foreground: #172b4d;
-}
+@theme {
+	/* Text */
+	--color-text-primary: #172b4d;
+	--color-text-secondary: #505f79;
+	--color-text-tertiary: #97a0af;
+	--color-text-disabled: #a5adba;
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--color-background: #1d2125;
-		--color-foreground: #b6c2cf;
-	}
+	/* Backgrounds */
+	--color-surface: #ffffff;
+	--color-surface-subtle: #fafbfc;
+	--color-surface-hover: #ebecf0;
+	--color-surface-input-disabled: #fafbfc;
+
+	/* Borders */
+	--color-border: #dfe1e6;
+	--color-border-focus: #0052cc;
+
+	/* Brand / Primary */
+	--color-brand: #0052cc;
+	--color-brand-hover: #0065ff;
+	--color-brand-light: #deebff;
+	--color-brand-subtle: #b3d4ff;
+
+	/* Success */
+	--color-success: #36b37e;
+	--color-success-bg: #e3fcef;
+	--color-success-text: #006644;
+
+	/* Error */
+	--color-error: #ff5630;
+	--color-error-hover: #de350b;
+	--color-error-bg: #ffebe6;
+	--color-error-text: #bf2600;
+
+	/* Warning */
+	--color-warning: #ffab00;
+	--color-warning-bg: #fffae6;
+
+	/* Info */
+	--color-info: #00b8d9;
+
+	/* Insight types */
+	--color-insight-pricing: #ff5630;
+	--color-insight-feature: #36b37e;
+	--color-insight-hiring: #6554c0;
+	--color-insight-funding: #ffab00;
+	--color-insight-sentiment: #00b8d9;
+	--color-insight-messaging: #505f79;
 }
 
 body {
-	background: var(--color-background);
-	color: var(--color-foreground);
+	background: var(--color-surface-subtle);
+	color: var(--color-text-primary);
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans",
 		"Droid Sans", "Helvetica Neue", sans-serif;
 }
@@ -23,39 +61,39 @@ body {
 .digest-content h1 {
 	font-size: 1.5rem;
 	font-weight: 600;
-	color: #172b4d;
+	color: var(--color-text-primary);
 	margin-bottom: 0.75rem;
 	margin-top: 1.5rem;
 }
 .digest-content h2 {
 	font-size: 1.25rem;
 	font-weight: 600;
-	color: #172b4d;
+	color: var(--color-text-primary);
 	margin-bottom: 0.5rem;
 	margin-top: 1.25rem;
 }
 .digest-content h3 {
 	font-size: 1.125rem;
 	font-weight: 600;
-	color: #172b4d;
+	color: var(--color-text-primary);
 	margin-bottom: 0.5rem;
 	margin-top: 1rem;
 }
 .digest-content h4 {
 	font-size: 1rem;
 	font-weight: 600;
-	color: #172b4d;
+	color: var(--color-text-primary);
 	margin-bottom: 0.5rem;
 	margin-top: 1rem;
 }
 .digest-content p {
-	color: #505f79;
+	color: var(--color-text-secondary);
 	line-height: 1.75;
 	margin-bottom: 0.75rem;
 }
 .digest-content ul,
 .digest-content ol {
-	color: #505f79;
+	color: var(--color-text-secondary);
 	padding-left: 1.5rem;
 	margin-bottom: 0.75rem;
 	line-height: 1.75;
@@ -70,21 +108,21 @@ body {
 	margin-bottom: 0.25rem;
 }
 .digest-content a {
-	color: #0052cc;
+	color: var(--color-brand);
 	text-decoration: underline;
 }
 .digest-content a:hover {
-	color: #0065ff;
+	color: var(--color-brand-hover);
 }
 .digest-content strong,
 .digest-content b {
 	font-weight: 600;
-	color: #172b4d;
+	color: var(--color-text-primary);
 }
 .digest-content blockquote {
-	border-left: 3px solid #dfe1e6;
+	border-left: 3px solid var(--color-border);
 	padding-left: 1rem;
-	color: #505f79;
+	color: var(--color-text-secondary);
 	margin-bottom: 0.75rem;
 }
 .digest-content > :first-child {

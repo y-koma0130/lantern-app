@@ -39,13 +39,15 @@ export function DigestListItem({
 	return (
 		<Link
 			href={`/${orgSlug}/dashboard/${id}`}
-			className="block rounded-[3px] border border-[#DFE1E6] bg-white p-4 transition-colors hover:border-[#B3D4FF] hover:bg-[#FAFBFC]"
+			className="block rounded-[3px] border border-border bg-white p-4 transition-colors hover:border-brand-subtle hover:bg-surface-subtle"
 		>
 			<div className="mb-1 flex items-center gap-3">
-				<span className="text-sm font-semibold text-[#172B4D]">Week of {formatDate(weekOf)}</span>
-				<span className="text-xs text-[#97A0AF]">Generated {formatDate(generatedAt)}</span>
+				<span className="text-sm font-semibold text-text-primary">
+					Week of {formatDate(weekOf)}
+				</span>
+				<span className="text-xs text-text-tertiary">Generated {formatDate(generatedAt)}</span>
 			</div>
-			<p className="text-sm leading-relaxed text-[#505F79]">
+			<p className="text-sm leading-relaxed text-text-secondary">
 				{preview}
 				{stripMarkdown(contentMd).length > 150 ? "..." : ""}
 			</p>

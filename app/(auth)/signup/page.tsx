@@ -9,8 +9,8 @@ export default function SignupPage() {
 	return (
 		<div>
 			<div className="mb-8 text-center">
-				<h1 className="text-2xl font-bold text-[var(--color-foreground)]">Create your account</h1>
-				<p className="mt-2 text-sm text-gray-500">Get started with Lantern</p>
+				<h1 className="text-2xl font-bold text-text-primary">Create your account</h1>
+				<p className="mt-2 text-sm text-text-secondary">Get started with Lantern</p>
 			</div>
 			<SignupForm />
 		</div>

@@ -9,8 +9,10 @@ export default function LoginPage() {
 	return (
 		<div>
 			<div className="mb-8 text-center">
-				<h1 className="text-2xl font-bold text-[var(--color-foreground)]">Sign in to Lantern</h1>
-				<p className="mt-2 text-sm text-gray-500">Competitive intelligence for cybersecurity</p>
+				<h1 className="text-2xl font-bold text-text-primary">Sign in to Lantern</h1>
+				<p className="mt-2 text-sm text-text-secondary">
+					Competitive intelligence for cybersecurity
+				</p>
 			</div>
 			<LoginForm />
 		</div>

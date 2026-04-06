@@ -121,8 +121,8 @@ export function Sidebar({ orgs: _orgs }: SidebarProps) {
 								onClick={() => toggleSection(item.label)}
 								className={`flex w-full cursor-pointer items-center gap-3 rounded-[3px] px-3 py-2 text-left text-sm font-medium transition-colors ${
 									isActive(item.href)
-										? "bg-[#E3FCEF] text-[#0052CC]"
-										: "text-[#172B4D] hover:bg-[#EBECF0]"
+										? "bg-success-bg text-brand"
+										: "text-text-primary hover:bg-surface-hover"
 								}`}
 							>
 								<NavIcon type={item.icon} />
@@ -153,8 +153,8 @@ export function Sidebar({ orgs: _orgs }: SidebarProps) {
 											onClick={() => setMobileOpen(false)}
 											className={`rounded-[3px] px-3 py-1.5 text-sm transition-colors ${
 												isActive(child.href)
-													? "bg-[#E3FCEF] text-[#0052CC] font-medium"
-													: "text-[#505F79] hover:bg-[#EBECF0] hover:text-[#172B4D]"
+													? "bg-success-bg text-brand font-medium"
+													: "text-text-secondary hover:bg-surface-hover hover:text-text-primary"
 											}`}
 										>
 											{child.label}
@@ -169,8 +169,8 @@ export function Sidebar({ orgs: _orgs }: SidebarProps) {
 							onClick={() => setMobileOpen(false)}
 							className={`flex items-center gap-3 rounded-[3px] px-3 py-2 text-sm font-medium transition-colors ${
 								isActive(item.href)
-									? "bg-[#E3FCEF] text-[#0052CC]"
-									: "text-[#172B4D] hover:bg-[#EBECF0]"
+									? "bg-success-bg text-brand"
+									: "text-text-primary hover:bg-surface-hover"
 							}`}
 						>
 							<NavIcon type={item.icon} />
@@ -188,7 +188,7 @@ export function Sidebar({ orgs: _orgs }: SidebarProps) {
 			<button
 				type="button"
 				onClick={() => setMobileOpen(!mobileOpen)}
-				className="fixed top-16 left-3 z-40 cursor-pointer rounded-[3px] border border-[#DFE1E6] bg-white p-2 shadow-sm md:hidden"
+				className="fixed top-16 left-3 z-40 cursor-pointer rounded-[3px] border border-border bg-white p-2 shadow-sm md:hidden"
 				aria-label="Toggle sidebar"
 			>
 				<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -215,7 +215,7 @@ export function Sidebar({ orgs: _orgs }: SidebarProps) {
 
 			{/* Sidebar */}
 			<aside
-				className={`fixed top-14 left-0 z-30 h-[calc(100vh-3.5rem)] w-60 shrink-0 border-r border-[#DFE1E6] bg-white transition-transform md:static md:translate-x-0 ${
+				className={`fixed top-14 left-0 z-30 h-[calc(100vh-3.5rem)] w-60 shrink-0 border-r border-border bg-white transition-transform md:static md:translate-x-0 ${
 					mobileOpen ? "translate-x-0" : "-translate-x-full"
 				}`}
 			>

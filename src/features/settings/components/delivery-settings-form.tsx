@@ -117,20 +117,20 @@ export function DeliverySettingsForm({
 	}
 
 	const inputClass =
-		"w-full rounded-[3px] border border-[#DFE1E6] px-3 py-2 text-sm text-[#172B4D] shadow-sm focus:border-[#0052CC] focus:ring-1 focus:ring-[#0052CC] focus:outline-none h-9 disabled:bg-[#FAFBFC] disabled:text-[#A5ADBA] disabled:cursor-not-allowed";
+		"w-full rounded-[3px] border border-border px-3 py-2 text-sm text-text-primary shadow-sm focus:border-border-focus focus:ring-1 focus:ring-brand focus:outline-none h-9 disabled:bg-surface-subtle disabled:text-text-disabled disabled:cursor-not-allowed";
 	const btnSecondary =
-		"shrink-0 cursor-pointer rounded-[3px] border border-[#DFE1E6] bg-white px-3 py-1.5 text-xs font-medium text-[#505F79] hover:bg-[#F4F5F7] disabled:opacity-50";
+		"shrink-0 cursor-pointer rounded-[3px] border border-border bg-white px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-surface-hover disabled:opacity-50";
 	const btnPrimary =
-		"shrink-0 cursor-pointer rounded-[3px] bg-[#0052CC] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#0065FF] disabled:opacity-50";
+		"shrink-0 cursor-pointer rounded-[3px] bg-brand px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-hover disabled:opacity-50";
 
 	return (
 		<div className="space-y-4">
 			{/* Email */}
-			<div className="rounded-[3px] border border-[#DFE1E6] bg-white p-4">
+			<div className="rounded-[3px] border border-border bg-white p-4">
 				<div className="flex items-center justify-between">
 					<div>
-						<p className="text-sm font-medium text-[#172B4D]">Email notifications</p>
-						<p className="text-xs text-[#505F79]">
+						<p className="text-sm font-medium text-text-primary">Email notifications</p>
+						<p className="text-xs text-text-secondary">
 							Receive digest reports via email to all organization members.
 						</p>
 					</div>
@@ -140,8 +140,8 @@ export function DeliverySettingsForm({
 						aria-checked={channelEmail}
 						disabled={!isOwner}
 						onClick={handleEmailToggle}
-						className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:ring-2 focus:ring-[#0052CC] focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
-							channelEmail ? "bg-[#0052CC]" : "bg-[#DFE1E6]"
+						className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+							channelEmail ? "bg-brand" : "bg-border"
 						}`}
 					>
 						<span
@@ -154,8 +154,8 @@ export function DeliverySettingsForm({
 			</div>
 
 			{/* Slack */}
-			<div className="rounded-[3px] border border-[#DFE1E6] bg-white p-4">
-				<label htmlFor="channel-slack" className="mb-1 block text-sm font-medium text-[#172B4D]">
+			<div className="rounded-[3px] border border-border bg-white p-4">
+				<label htmlFor="channel-slack" className="mb-1 block text-sm font-medium text-text-primary">
 					Slack webhook URL
 				</label>
 				<div className="flex gap-2">
@@ -185,18 +185,21 @@ export function DeliverySettingsForm({
 						{testingSlack ? "Testing..." : "Test"}
 					</button>
 				</div>
-				<p className="mt-1.5 text-xs text-[#97A0AF]">
+				<p className="mt-1.5 text-xs text-text-tertiary">
 					Open Slack &rarr; Apps &rarr; Incoming Webhooks &rarr; Add to Slack &rarr; choose a
 					channel &rarr; copy the Webhook URL.
 				</p>
 				{!canSlackDiscord && (
-					<p className="mt-1.5 text-xs text-[#FF8B00]">{slackDiscordUpgradeMessage}</p>
+					<p className="mt-1.5 text-xs text-warning">{slackDiscordUpgradeMessage}</p>
 				)}
 			</div>
 
 			{/* Discord */}
-			<div className="rounded-[3px] border border-[#DFE1E6] bg-white p-4">
-				<label htmlFor="channel-discord" className="mb-1 block text-sm font-medium text-[#172B4D]">
+			<div className="rounded-[3px] border border-border bg-white p-4">
+				<label
+					htmlFor="channel-discord"
+					className="mb-1 block text-sm font-medium text-text-primary"
+				>
 					Discord webhook URL
 				</label>
 				<div className="flex gap-2">
@@ -226,18 +229,21 @@ export function DeliverySettingsForm({
 						{testingDiscord ? "Testing..." : "Test"}
 					</button>
 				</div>
-				<p className="mt-1.5 text-xs text-[#97A0AF]">
+				<p className="mt-1.5 text-xs text-text-tertiary">
 					Open Discord &rarr; Server Settings &rarr; Integrations &rarr; Webhooks &rarr; New Webhook
 					&rarr; choose a channel &rarr; copy the Webhook URL.
 				</p>
 				{!canSlackDiscord && (
-					<p className="mt-1.5 text-xs text-[#FF8B00]">{slackDiscordUpgradeMessage}</p>
+					<p className="mt-1.5 text-xs text-warning">{slackDiscordUpgradeMessage}</p>
 				)}
 			</div>
 
 			{/* Frequency */}
-			<div className="rounded-[3px] border border-[#DFE1E6] bg-white p-4">
-				<label htmlFor="digest-frequency" className="mb-1 block text-sm font-medium text-[#172B4D]">
+			<div className="rounded-[3px] border border-border bg-white p-4">
+				<label
+					htmlFor="digest-frequency"
+					className="mb-1 block text-sm font-medium text-text-primary"
+				>
 					Digest frequency
 				</label>
 				<div className="flex gap-2">
