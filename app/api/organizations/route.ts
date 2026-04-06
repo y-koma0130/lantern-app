@@ -36,6 +36,19 @@ export async function POST(request: Request) {
 			return NextResponse.json({ error: orgError.message }, { status: 500 });
 		}
 
+		// Create owner membership (trigger removed — service role can't use auth.uid())
+		const { error: memberError } = await supabase.from("organization_members").insert({
+			org_id: org.id,
+			user_id: user.id,
+			role: "owner",
+		});
+
+		if (memberError) {
+			// Rollback: delete the org if membership creation fails
+			await supabase.from("organizations").delete().eq("id", org.id);
+			return NextResponse.json({ error: "Failed to create organization" }, { status: 500 });
+		}
+
 		await setLastActiveOrg(supabase, user.id, org.id);
 
 		return NextResponse.json(org, { status: 201 });

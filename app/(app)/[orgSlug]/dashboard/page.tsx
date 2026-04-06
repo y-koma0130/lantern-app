@@ -20,7 +20,7 @@ export default async function Page({ params }: PageProps) {
 			<div className="mx-auto max-w-4xl px-6 py-8">
 				<div className="mb-6 flex items-center justify-between">
 					<h1 className="text-xl font-semibold text-[#172B4D]">Dashboard</h1>
-					<ExportButtons orgId={orgId} />
+					<ExportButtons orgId={orgId} canExport={orgPlan === "pro" || orgPlan === "team"} />
 				</div>
 				<DashboardPage orgId={orgId} orgSlug={orgSlug} orgPlan={orgPlan} />
 			</div>

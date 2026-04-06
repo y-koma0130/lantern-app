@@ -125,24 +125,8 @@ AS $$
   );
 $$;
 
--- ========== 5. Auto-create owner on org creation ==========
-
-CREATE OR REPLACE FUNCTION handle_new_org()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-BEGIN
-  INSERT INTO organization_members (org_id, user_id, role)
-  VALUES (NEW.id, auth.uid(), 'owner');
-  RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER on_org_created
-  AFTER INSERT ON organizations
-  FOR EACH ROW
-  EXECUTE FUNCTION handle_new_org();
+-- Note: Owner membership is created explicitly in the API route (POST /api/organizations)
+-- because the service role client bypasses auth context, making auth.uid() unavailable in triggers.
 
 -- ========== 6. RLS policies ==========
 
