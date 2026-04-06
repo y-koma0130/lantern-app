@@ -43,7 +43,10 @@ export async function POST(
 
 		if ((countResult.count ?? 0) >= orgResult.data.max_competitors) {
 			return NextResponse.json(
-				{ error: `Competitor limit reached (max: ${orgResult.data.max_competitors})` },
+				{
+					error: `You've reached the limit of ${orgResult.data.max_competitors} competitors on your current plan. Upgrade your plan to track more competitors.`,
+					code: "COMPETITOR_LIMIT_REACHED",
+				},
 				{ status: 422 },
 			);
 		}

@@ -8,7 +8,7 @@ interface CompetitorsPageProps {
 }
 
 export async function CompetitorsPage({ orgSlug }: CompetitorsPageProps) {
-	const { orgId, isOwner } = await getOrgContext(orgSlug);
+	const { orgId, orgSlug: slug, isOwner } = await getOrgContext(orgSlug);
 
 	const supabase = createAdminClient();
 	const { data: competitors } = await supabase
@@ -19,7 +19,13 @@ export async function CompetitorsPage({ orgSlug }: CompetitorsPageProps) {
 
 	return (
 		<>
-			{isOwner && <AddCompetitorForm orgId={orgId} />}
+			{isOwner && (
+				<AddCompetitorForm
+					orgId={orgId}
+					orgSlug={slug}
+					existingCompetitorNames={(competitors ?? []).map((c) => c.name)}
+				/>
+			)}
 			<CompetitorList competitors={competitors ?? []} orgId={orgId} isOwner={isOwner} />
 		</>
 	);
