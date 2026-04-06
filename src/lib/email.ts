@@ -32,7 +32,7 @@ export async function sendInvitationEmail(params: {
 	const inviterEmail = escapeHtml(params.inviterEmail);
 
 	await resend.emails.send({
-		from: "Lantern <noreply@lantern.app>",
+		from: process.env.RESEND_FROM_EMAIL ?? "Lantern <noreply@lanternci.com>",
 		to: params.to,
 		subject: `You've been invited to join ${params.orgName} on Lantern`,
 		html: `

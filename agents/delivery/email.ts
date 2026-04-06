@@ -21,7 +21,7 @@ export async function sendEmail(params: EmailParams): Promise<void> {
 	const resend = getResend();
 
 	const { error } = await resend.emails.send({
-		from: "Lantern <digest@lantern.app>",
+		from: process.env.RESEND_FROM_EMAIL ?? "Lantern <noreply@lanternci.com>",
 		to: params.to,
 		subject: params.subject,
 		html: params.html,
