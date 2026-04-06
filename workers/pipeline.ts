@@ -1,21 +1,17 @@
+import { runPipeline } from "../agents/pipeline.js";
+import { setBrowserBinding } from "../agents/shared/browser.js";
+
 interface PipelineEnv {
 	BROWSER: Fetcher;
-	SUPABASE_URL: string;
-	SUPABASE_SERVICE_ROLE_KEY: string;
-	ANTHROPIC_API_KEY: string;
-	RESEND_API_KEY: string;
 }
 
-export default {
-	async scheduled(event: ScheduledEvent, _env: PipelineEnv, _ctx: ExecutionContext) {
-		if (event.cron === "0 6 * * 1") {
-			console.log("[Cron] Weekly pipeline triggered");
-			// TODO: invoke pipeline workflow with env bindings
-		}
+export async function runWeeklyPipeline(env: PipelineEnv): Promise<void> {
+	setBrowserBinding(env.BROWSER);
+	await runPipeline();
+}
 
-		if (event.cron === "0 8 * * *") {
-			console.log("[Cron] Daily alert check triggered");
-			// TODO: daily alert for Pro/Team orgs
-		}
-	},
-};
+export async function runDailyAlertCheck(_env: PipelineEnv): Promise<void> {
+	// TODO: Pro/Team orgs only — check for high-importance insights (score >= 8)
+	// and send alert emails for insights detected since yesterday
+	console.log("[Cron] Daily alert check — not yet implemented");
+}

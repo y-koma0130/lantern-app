@@ -1,11 +1,16 @@
-import type { SupabaseClient, User } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import type { SafeParseReturnType } from "zod";
 import { createAdminClient } from "./supabase/admin";
 import { createClient } from "./supabase/server";
 
+interface AuthUser {
+	id: string;
+	email?: string;
+}
+
 interface AuthResult {
-	user: User;
+	user: AuthUser;
 	supabase: SupabaseClient;
 }
 
@@ -19,8 +24,6 @@ export async function requireUser(): Promise<AuthResult | NextResponse> {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
-	// Use service role client for DB operations — bypasses RLS
-	// Auth is verified above via getUser(); authorization checks are done in application code
 	const supabase = createAdminClient();
 
 	return { user, supabase };

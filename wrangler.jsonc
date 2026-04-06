@@ -3,24 +3,26 @@
 	"compatibility_date": "2025-12-01",
 	"compatibility_flags": ["nodejs_compat"],
 
-	// Main worker serves the Next.js app via OpenNext
-	"main": ".open-next/worker.js",
+	// Custom worker: Next.js (via OpenNext) + Cron scheduled handler
+	"main": "./custom-worker.ts",
 	"assets": {
 		"directory": ".open-next/assets",
 		"binding": "ASSETS"
 	},
 
-	// Browser Rendering binding for Playwright
+	// Browser Rendering binding for Playwright scraping
 	"browser": {
 		"binding": "BROWSER"
 	},
 
-	// Environment variables (secrets are set via `wrangler secret put`)
+	// Environment variables (non-secret)
 	"vars": {
 		"NODE_ENV": "production"
 	},
 
-	// Cron triggers for the pipeline
+	// Cron triggers
+	// - Weekly pipeline: Monday 06:00 UTC
+	// - Daily alert check: 08:00 UTC (Pro/Team orgs only)
 	"triggers": {
 		"crons": ["0 6 * * 1", "0 8 * * *"]
 	}
