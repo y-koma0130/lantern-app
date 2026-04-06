@@ -40,7 +40,7 @@ export const PLANS: Record<string, PlanFeatures> = {
 		slackDiscord: false,
 		battleCards: false,
 		csvExport: false,
-		archiveDays: 0,
+		archiveDays: 7,
 		support: "Community",
 	},
 	starter: {

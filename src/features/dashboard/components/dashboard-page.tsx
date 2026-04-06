@@ -1,29 +1,47 @@
 import { DigestListItem } from "@/features/dashboard/components/digest-list-item";
 import { InsightCard } from "@/features/dashboard/components/insight-card";
+import { getArchiveDays } from "@/lib/plan-limits";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 interface DashboardPageProps {
 	orgId: string;
 	orgSlug: string;
+	orgPlan: string;
 }
 
-export async function DashboardPage({ orgId, orgSlug }: DashboardPageProps) {
-	const supabase = createAdminClient();
+function getArchiveCutoff(plan: string): string | null {
+	const days = getArchiveDays(plan);
+	if (days === null) return null; // unlimited
+	const cutoff = new Date();
+	cutoff.setDate(cutoff.getDate() - days);
+	return cutoff.toISOString();
+}
 
-	const [digestsResult, insightsResult] = await Promise.all([
-		supabase
-			.from("digests")
-			.select("id, week_of, content_md, content_html, generated_at")
-			.eq("org_id", orgId)
-			.order("week_of", { ascending: false })
-			.limit(10),
-		supabase
-			.from("insights")
-			.select("id, type, importance_score, summary, week_of, competitors(name)")
-			.eq("org_id", orgId)
-			.order("importance_score", { ascending: false })
-			.limit(5),
-	]);
+export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPageProps) {
+	const supabase = createAdminClient();
+	const archiveCutoff = getArchiveCutoff(orgPlan);
+
+	let digestsQuery = supabase
+		.from("digests")
+		.select("id, week_of, content_md, content_html, generated_at")
+		.eq("org_id", orgId)
+		.order("week_of", { ascending: false })
+		.limit(10);
+
+	let insightsQuery = supabase
+		.from("insights")
+		.select("id, type, importance_score, summary, week_of, competitors(name)")
+		.eq("org_id", orgId)
+		.order("importance_score", { ascending: false })
+		.limit(5);
+
+	// Apply archive limit (null = unlimited, cutoff date = filter)
+	if (archiveCutoff) {
+		digestsQuery = digestsQuery.gte("generated_at", archiveCutoff);
+		insightsQuery = insightsQuery.gte("created_at", archiveCutoff);
+	}
+
+	const [digestsResult, insightsResult] = await Promise.all([digestsQuery, insightsQuery]);
 
 	const digests = digestsResult.data ?? [];
 	const insights = insightsResult.data ?? [];

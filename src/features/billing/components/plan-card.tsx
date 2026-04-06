@@ -62,7 +62,6 @@ function formatFrequency(frequency: string): string {
 
 function formatArchive(days: number | null): string {
 	if (days === null) return "Unlimited archive";
-	if (days === 0) return "No archive";
 	return `${days}-day archive`;
 }
 

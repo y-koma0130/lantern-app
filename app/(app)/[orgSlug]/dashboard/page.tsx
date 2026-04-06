@@ -13,7 +13,7 @@ interface PageProps {
 
 export default async function Page({ params }: PageProps) {
 	const { orgSlug } = await params;
-	const { orgId } = await getOrgContext(orgSlug);
+	const { orgId, orgPlan } = await getOrgContext(orgSlug);
 
 	return (
 		<div className="min-h-full bg-[#FAFBFC]">
@@ -22,7 +22,7 @@ export default async function Page({ params }: PageProps) {
 					<h1 className="text-xl font-semibold text-[#172B4D]">Dashboard</h1>
 					<ExportButtons orgId={orgId} />
 				</div>
-				<DashboardPage orgId={orgId} orgSlug={orgSlug} />
+				<DashboardPage orgId={orgId} orgSlug={orgSlug} orgPlan={orgPlan} />
 			</div>
 		</div>
 	);
