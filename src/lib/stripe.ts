@@ -11,74 +11,120 @@ export function getStripe(): Stripe {
 	return stripeClient;
 }
 
-export const PLANS = {
+export type BillingInterval = "monthly" | "yearly";
+
+export interface PlanFeatures {
+	name: string;
+	monthlyPrice: number;
+	yearlyPrice: number;
+	competitors: number;
+	members: number;
+	frequency: string;
+	emailDelivery: boolean;
+	slackDiscord: boolean;
+	battleCards: boolean;
+	csvExport: boolean;
+	archiveDays: number | null;
+	support: string;
+}
+
+export const PLANS: Record<string, PlanFeatures> = {
 	free: {
 		name: "Free",
-		price: 0,
+		monthlyPrice: 0,
+		yearlyPrice: 0,
 		competitors: 3,
 		members: 1,
 		frequency: "monthly",
-		competitorsLabel: "3 competitors",
-		membersLabel: "1 member",
-		frequencyLabel: "Monthly digests",
+		emailDelivery: true,
+		slackDiscord: false,
+		battleCards: false,
+		csvExport: false,
+		archiveDays: 0,
+		support: "Community",
 	},
 	starter: {
 		name: "Starter",
-		price: 99,
+		monthlyPrice: 79,
+		yearlyPrice: 790,
 		competitors: 10,
 		members: 3,
 		frequency: "weekly",
-		competitorsLabel: "10 competitors",
-		membersLabel: "3 members",
-		frequencyLabel: "Weekly digests",
+		emailDelivery: true,
+		slackDiscord: true,
+		battleCards: false,
+		csvExport: false,
+		archiveDays: 30,
+		support: "Email",
 	},
 	pro: {
 		name: "Pro",
-		price: 249,
-		competitors: 25,
+		monthlyPrice: 199,
+		yearlyPrice: 1990,
+		competitors: 20,
 		members: 10,
 		frequency: "weekly",
-		competitorsLabel: "25 competitors",
-		membersLabel: "10 members",
-		frequencyLabel: "Weekly + daily alerts",
+		emailDelivery: true,
+		slackDiscord: true,
+		battleCards: true,
+		csvExport: true,
+		archiveDays: 90,
+		support: "Priority email",
 	},
 	team: {
 		name: "Team",
-		price: 499,
-		competitors: 999,
-		members: 999,
+		monthlyPrice: 399,
+		yearlyPrice: 3990,
+		competitors: 50,
+		members: 25,
 		frequency: "weekly",
-		competitorsLabel: "Unlimited competitors",
-		membersLabel: "Unlimited members",
-		frequencyLabel: "Custom frequency",
+		emailDelivery: true,
+		slackDiscord: true,
+		battleCards: true,
+		csvExport: true,
+		archiveDays: null,
+		support: "Priority email",
 	},
 } as const;
 
-export type PlanId = keyof typeof PLANS;
+export type PlanId = "free" | "starter" | "pro" | "team";
 
 export const PLAN_ORDER: PlanId[] = ["free", "starter", "pro", "team"];
 
-export function getStripePriceId(plan: PlanId): string | null {
-	const priceIds: Record<PlanId, string | undefined> = {
-		free: undefined,
-		starter: process.env.STRIPE_PRICE_STARTER,
-		pro: process.env.STRIPE_PRICE_PRO,
-		team: process.env.STRIPE_PRICE_TEAM,
+export function getStripePriceId(plan: PlanId, interval: BillingInterval): string | null {
+	const priceIds: Record<PlanId, Record<BillingInterval, string | undefined>> = {
+		free: { monthly: undefined, yearly: undefined },
+		starter: {
+			monthly: process.env.STRIPE_PRICE_STARTER_MONTHLY,
+			yearly: process.env.STRIPE_PRICE_STARTER_YEARLY,
+		},
+		pro: {
+			monthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
+			yearly: process.env.STRIPE_PRICE_PRO_YEARLY,
+		},
+		team: {
+			monthly: process.env.STRIPE_PRICE_TEAM_MONTHLY,
+			yearly: process.env.STRIPE_PRICE_TEAM_YEARLY,
+		},
 	};
-	return priceIds[plan] ?? null;
+	return priceIds[plan]?.[interval] ?? null;
 }
 
 export function getPlanFromPriceId(priceId: string): PlanId | null {
-	const mapping: Record<string, PlanId> = {};
-	const starterPrice = process.env.STRIPE_PRICE_STARTER;
-	const proPrice = process.env.STRIPE_PRICE_PRO;
-	const teamPrice = process.env.STRIPE_PRICE_TEAM;
+	const allPriceEnvs: { env: string; plan: PlanId }[] = [
+		{ env: "STRIPE_PRICE_STARTER_MONTHLY", plan: "starter" },
+		{ env: "STRIPE_PRICE_STARTER_YEARLY", plan: "starter" },
+		{ env: "STRIPE_PRICE_PRO_MONTHLY", plan: "pro" },
+		{ env: "STRIPE_PRICE_PRO_YEARLY", plan: "pro" },
+		{ env: "STRIPE_PRICE_TEAM_MONTHLY", plan: "team" },
+		{ env: "STRIPE_PRICE_TEAM_YEARLY", plan: "team" },
+	];
 
-	if (starterPrice) mapping[starterPrice] = "starter";
-	if (proPrice) mapping[proPrice] = "pro";
-	if (teamPrice) mapping[teamPrice] = "team";
+	for (const { env, plan } of allPriceEnvs) {
+		if (process.env[env] === priceId) return plan;
+	}
 
-	return mapping[priceId] ?? null;
+	return null;
 }
 
 export function getAppUrl(): string {

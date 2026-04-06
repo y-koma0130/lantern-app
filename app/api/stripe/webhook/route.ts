@@ -11,6 +11,17 @@ async function applyPlanToOrg(
 ) {
 	const supabase = createAdminClient();
 	const planConfig = PLANS[plan];
+	if (!planConfig) {
+		console.error(`[Webhook] Unknown plan: ${plan}`);
+		return;
+	}
+
+	console.log(`[Webhook] Updating org ${orgId} to plan: ${plan}`, {
+		max_competitors: planConfig.competitors,
+		max_members: planConfig.members,
+		digest_frequency: planConfig.frequency,
+		...extras,
+	});
 
 	const { error } = await supabase
 		.from("organizations")
@@ -28,6 +39,8 @@ async function applyPlanToOrg(
 
 	if (error) {
 		console.error(`[Webhook] Failed to update org ${orgId}:`, error.message);
+	} else {
+		console.log(`[Webhook] Successfully updated org ${orgId} to ${plan}`);
 	}
 }
 
@@ -49,16 +62,30 @@ export async function POST(request: Request) {
 		let event: Stripe.Event;
 		try {
 			event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-		} catch {
+		} catch (err) {
+			console.error("[Webhook] Signature verification failed:", err);
 			return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
 		}
+
+		console.log(`[Webhook] Received event: ${event.type} (${event.id})`);
 
 		switch (event.type) {
 			case "checkout.session.completed": {
 				const session = event.data.object as Stripe.Checkout.Session;
 				const orgId = session.metadata?.org_id;
 				const planFromMetadata = session.metadata?.plan as PlanId | undefined;
-				if (!orgId) break;
+
+				console.log("[Webhook] checkout.session.completed metadata:", {
+					org_id: orgId,
+					plan: planFromMetadata,
+					customer: session.customer,
+					subscription: session.subscription,
+				});
+
+				if (!orgId) {
+					console.warn("[Webhook] No org_id in session metadata, skipping");
+					break;
+				}
 
 				const subscriptionId =
 					typeof session.subscription === "string"
@@ -67,11 +94,12 @@ export async function POST(request: Request) {
 				const customerId =
 					typeof session.customer === "string" ? session.customer : session.customer?.id;
 
-				// Use plan from metadata (set at checkout creation) — avoids extra Stripe API call
 				let plan = planFromMetadata;
 				if (!plan && subscriptionId) {
+					console.log("[Webhook] No plan in metadata, retrieving from subscription...");
 					const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 					const priceId = subscription.items.data[0]?.price.id;
+					console.log("[Webhook] Subscription price ID:", priceId);
 					if (priceId) plan = getPlanFromPriceId(priceId) ?? undefined;
 				}
 
@@ -80,6 +108,8 @@ export async function POST(request: Request) {
 						stripeCustomerId: customerId ?? undefined,
 						stripeSubscriptionId: subscriptionId,
 					});
+				} else {
+					console.warn("[Webhook] Could not determine plan for checkout session");
 				}
 
 				break;
@@ -88,13 +118,25 @@ export async function POST(request: Request) {
 			case "customer.subscription.updated": {
 				const subscription = event.data.object as Stripe.Subscription;
 				const orgId = subscription.metadata?.org_id;
-				if (!orgId) break;
+
+				console.log("[Webhook] customer.subscription.updated metadata:", {
+					org_id: orgId,
+					priceId: subscription.items.data[0]?.price.id,
+				});
+
+				if (!orgId) {
+					console.warn("[Webhook] No org_id in subscription metadata, skipping");
+					break;
+				}
 
 				const priceId = subscription.items.data[0]?.price.id;
 				if (!priceId) break;
 
 				const plan = getPlanFromPriceId(priceId);
-				if (!plan) break;
+				if (!plan) {
+					console.warn(`[Webhook] Unknown price ID: ${priceId}`);
+					break;
+				}
 
 				await applyPlanToOrg(orgId, plan);
 				break;
@@ -103,6 +145,9 @@ export async function POST(request: Request) {
 			case "customer.subscription.deleted": {
 				const subscription = event.data.object as Stripe.Subscription;
 				const orgId = subscription.metadata?.org_id;
+
+				console.log("[Webhook] customer.subscription.deleted:", { org_id: orgId });
+
 				if (!orgId) break;
 
 				await applyPlanToOrg(orgId, "free", { stripeSubscriptionId: null });
@@ -110,6 +155,7 @@ export async function POST(request: Request) {
 			}
 
 			default:
+				console.log(`[Webhook] Unhandled event type: ${event.type}`);
 				break;
 		}
 

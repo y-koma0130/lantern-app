@@ -7,6 +7,7 @@ import { z } from "zod";
 const checkoutSchema = z.object({
 	orgId: z.string().uuid(),
 	plan: z.enum(["starter", "pro", "team"]),
+	interval: z.enum(["monthly", "yearly"]).default("monthly"),
 });
 
 export async function POST(request: Request) {
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
 		const parsed = checkoutSchema.safeParse(body);
 		if (!parsed.success) return zodErrorResponse(parsed);
 
-		const { orgId, plan } = parsed.data;
+		const { orgId, plan, interval } = parsed.data;
 
 		const [ownerError, { data: org }] = await Promise.all([
 			requireOrgOwner(supabase, orgId, user.id),
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
 			return NextResponse.json({ error: "Organization not found" }, { status: 404 });
 		}
 
-		const priceId = getStripePriceId(plan as PlanId);
+		const priceId = getStripePriceId(plan as PlanId, interval);
 		if (!priceId) {
 			return NextResponse.json({ error: "Price not configured for this plan" }, { status: 400 });
 		}
