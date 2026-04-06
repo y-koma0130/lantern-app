@@ -37,6 +37,29 @@ export function zodErrorResponse(parsed: SafeParseReturnType<unknown, unknown>):
 	return NextResponse.json({ error: message }, { status: 400 });
 }
 
+export async function requireOrgOwner(
+	supabase: SupabaseClient,
+	orgId: string,
+	userId: string,
+): Promise<NextResponse | null> {
+	const { data: membership } = await supabase
+		.from("organization_members")
+		.select("role")
+		.eq("org_id", orgId)
+		.eq("user_id", userId)
+		.single();
+
+	if (!membership) {
+		return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+	}
+
+	if (membership.role !== "owner") {
+		return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+	}
+
+	return null;
+}
+
 export async function setLastActiveOrg(
 	supabase: SupabaseClient,
 	userId: string,
