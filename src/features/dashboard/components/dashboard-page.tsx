@@ -1,14 +1,13 @@
 import { DigestListItem } from "@/features/dashboard/components/digest-list-item";
 import { InsightCard } from "@/features/dashboard/components/insight-card";
-import { getOrgContext } from "@/lib/queries/get-org-context";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 interface DashboardPageProps {
+	orgId: string;
 	orgSlug: string;
 }
 
-export async function DashboardPage({ orgSlug }: DashboardPageProps) {
-	const { orgId } = await getOrgContext(orgSlug);
+export async function DashboardPage({ orgId, orgSlug }: DashboardPageProps) {
 	const supabase = createAdminClient();
 
 	const [digestsResult, insightsResult] = await Promise.all([
