@@ -1,6 +1,15 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resendClient: Resend | undefined;
+
+function getResend(): Resend {
+	if (!resendClient) {
+		const apiKey = process.env.RESEND_API_KEY;
+		if (!apiKey) throw new Error("Missing RESEND_API_KEY");
+		resendClient = new Resend(apiKey);
+	}
+	return resendClient;
+}
 
 interface EmailParams {
 	to: string;
@@ -9,6 +18,8 @@ interface EmailParams {
 }
 
 export async function sendEmail(params: EmailParams): Promise<void> {
+	const resend = getResend();
+
 	const { error } = await resend.emails.send({
 		from: "Lantern <digest@lantern.app>",
 		to: params.to,

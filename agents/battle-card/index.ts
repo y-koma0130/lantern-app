@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { getCurrentWeek } from "../shared/date.js";
 import type { Organization } from "../shared/types.js";
 import { formatDigest } from "./formatter.js";
 import { buildPrompt } from "./prompt.js";
@@ -31,7 +32,8 @@ export async function runBattleCardGenerator(org: Organization): Promise<void> {
 			return;
 		}
 
-		const { markdown, html } = formatDigest(contentBlock.text);
+		const weekOf = getCurrentWeek();
+		const { markdown, html } = formatDigest(contentBlock.text, weekOf);
 
 		await saveDigest({
 			orgId: org.id,
