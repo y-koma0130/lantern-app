@@ -10,7 +10,12 @@
 		"lint:fix": "biome check --write .",
 		"typecheck": "tsc --noEmit",
 		"format": "biome format --write .",
-		"deploy": "opennextjs-cloudflare build && wrangler deploy"
+		"deploy": "opennextjs-cloudflare build && wrangler deploy",
+		"pipeline": "tsx agents/run.ts",
+		"pipeline:collector": "tsx agents/run.ts collector",
+		"pipeline:analyst": "tsx agents/run.ts analyst",
+		"pipeline:battlecard": "tsx agents/run.ts battlecard",
+		"pipeline:delivery": "tsx agents/run.ts delivery"
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.39.0",
@@ -19,9 +24,11 @@
 		"@supabase/ssr": "^0.5.2",
 		"@supabase/supabase-js": "^2.49.1",
 		"cheerio": "^1.0.0",
+		"dotenv": "^17.4.1",
 		"jotai": "^2.12.3",
 		"marked": "^15.0.0",
 		"next": "^15.5.0",
+		"playwright": "^1.59.1",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
 		"resend": "^4.1.2",
@@ -37,6 +44,7 @@
 		"@types/react-dom": "^19.1.2",
 		"babel-plugin-react-compiler": "^19.1.0-rc.2",
 		"tailwindcss": "^4.1.0",
+		"tsx": "^4.21.0",
 		"typescript": "^5.7.3",
 		"wrangler": "^4.0.0"
 	}

@@ -2,13 +2,27 @@ import { supabase } from "../shared/db.js";
 import type { DeliveryLog, Digest } from "../shared/types.js";
 
 export async function fetchPendingDigests(orgId: string): Promise<Digest[]> {
-	// Fetch digests that have no successful delivery log
-	const { data, error } = await supabase
-		.from("digests")
-		.select("*, delivery_logs!left(status)")
+	// Get IDs of digests that have already been successfully delivered
+	const { data: sentLogs } = await supabase
+		.from("delivery_logs")
+		.select("digest_id")
 		.eq("org_id", orgId)
-		.or("delivery_logs.status.is.null,delivery_logs.status.neq.sent")
+		.eq("status", "sent");
+
+	const sentDigestIds = (sentLogs ?? []).map((l) => l.digest_id);
+
+	// Fetch digests excluding already-delivered ones
+	let query = supabase
+		.from("digests")
+		.select("*")
+		.eq("org_id", orgId)
 		.order("generated_at", { ascending: false });
+
+	if (sentDigestIds.length > 0) {
+		query = query.not("id", "in", `(${sentDigestIds.map((id) => `"${id}"`).join(",")})`);
+	}
+
+	const { data, error } = await query;
 
 	if (error) {
 		throw new Error(`Failed to fetch pending digests: ${error.message}`);

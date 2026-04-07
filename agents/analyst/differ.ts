@@ -9,7 +9,7 @@ export interface DetectedDiff {
 	detail: Record<string, unknown>;
 }
 
-const MAX_DETAIL_TEXT_LENGTH = 500;
+const MAX_DETAIL_TEXT_LENGTH = 1_000;
 
 function truncate(text: string): string {
 	if (text.length <= MAX_DETAIL_TEXT_LENGTH) return text;
@@ -150,7 +150,10 @@ function detectG2Diffs(current: G2Data, previous: G2Data): DetectedDiff[] {
 
 export async function detectDiffs(snapshot: CompetitorSnapshot): Promise<DetectedDiff[]> {
 	const previous = await getLatestSnapshot(snapshot.competitorId, snapshot.source);
-	if (!previous) return [];
+
+	if (!previous) {
+		return generateInitialInsights(snapshot);
+	}
 
 	switch (snapshot.source) {
 		case "website":
@@ -166,4 +169,64 @@ export async function detectDiffs(snapshot: CompetitorSnapshot): Promise<Detecte
 		default:
 			return [];
 	}
+}
+
+function generateInitialInsights(snapshot: CompetitorSnapshot): DetectedDiff[] {
+	const diffs: DetectedDiff[] = [];
+
+	if (snapshot.source === "website") {
+		const data = snapshot.rawData as unknown as WebsiteCollectionResult;
+		const pages = data.pages ?? {};
+
+		for (const [path, page] of Object.entries(pages)) {
+			if (!page?.title) continue;
+
+			const lowerPath = path.toLowerCase();
+			let type: DetectedDiff["type"] = "messaging";
+
+			if (lowerPath.includes("pricing") || lowerPath.includes("plans")) {
+				type = "pricing";
+			} else if (
+				lowerPath.includes("feature") ||
+				lowerPath.includes("product") ||
+				lowerPath.includes("solutions")
+			) {
+				type = "feature";
+			}
+
+			const headings = page.headings ?? [];
+			const bodyPreview = truncate(page.bodyText ?? "");
+
+			diffs.push({
+				type,
+				summary: `[Baseline] ${page.title} — ${headings.length} sections, ${(page.bodyText ?? "").length} chars of content`,
+				detail: {
+					path,
+					title: page.title,
+					headings,
+					bodyPreview,
+					metaDescription: page.metaDescription ?? "",
+				},
+			});
+		}
+	}
+
+	if (snapshot.source === "g2") {
+		const data = snapshot.rawData as unknown as G2Data;
+
+		if (data.overallRating != null) {
+			diffs.push({
+				type: "sentiment",
+				summary: `[Baseline] G2 rating: ${data.overallRating}/5 with ${data.totalReviews ?? 0} reviews${data.category ? ` in ${data.category}` : ""}${data.categoryRank ? ` (ranked #${data.categoryRank})` : ""}`,
+				detail: {
+					overallRating: data.overallRating,
+					totalReviews: data.totalReviews,
+					category: data.category,
+					categoryRank: data.categoryRank,
+				},
+			});
+		}
+	}
+
+	return diffs;
 }

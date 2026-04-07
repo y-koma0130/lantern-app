@@ -31,7 +31,7 @@ export interface Competitor {
 	githubOrg: string | null;
 	linkedinSlug: string | null;
 	crunchbaseSlug: string | null;
-	niche: "cloud_security" | "grc" | "iam";
+	niche: string;
 	createdAt: string;
 }
 

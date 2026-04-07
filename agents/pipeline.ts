@@ -5,14 +5,15 @@ import { runCollector } from "./collector/index.js";
 import { runDelivery } from "./delivery/index.js";
 import { closeBrowser } from "./shared/browser.js";
 import { fetchActiveOrganizations } from "./shared/org-repository.js";
+import type { Organization } from "./shared/types.js";
 
-export async function runPipeline(): Promise<void> {
+export async function runPipeline(filterOrgs?: Organization[]): Promise<void> {
 	console.log("[Pipeline] Starting full pipeline run...");
 	const start = Date.now();
 
 	try {
-		const orgs = await fetchActiveOrganizations();
-		console.log(`[Pipeline] Found ${orgs.length} active organizations.`);
+		const orgs = filterOrgs ?? (await fetchActiveOrganizations());
+		console.log(`[Pipeline] Processing ${orgs.length} organization(s).`);
 
 		for (const org of orgs) {
 			console.log(`[Pipeline] Processing org: ${org.name} (${org.id})`);

@@ -1,4 +1,5 @@
 import { supabase } from "../shared/db.js";
+import { mapCompetitorRow, mapSnapshotRow } from "../shared/mappers.js";
 import type { Competitor, CompetitorSnapshot } from "../shared/types.js";
 
 export async function fetchCompetitors(orgId: string): Promise<Competitor[]> {
@@ -8,7 +9,7 @@ export async function fetchCompetitors(orgId: string): Promise<Competitor[]> {
 		throw new Error(`Failed to fetch competitors: ${error.message}`);
 	}
 
-	return (data ?? []) as Competitor[];
+	return (data ?? []).map((row) => mapCompetitorRow(row as Record<string, unknown>));
 }
 
 export async function saveSnapshots(
@@ -53,5 +54,5 @@ export async function getLatestSnapshot(
 		return null;
 	}
 
-	return data as CompetitorSnapshot;
+	return mapSnapshotRow(data as Record<string, unknown>);
 }

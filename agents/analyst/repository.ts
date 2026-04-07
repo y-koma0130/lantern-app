@@ -1,5 +1,6 @@
 import { getCurrentWeek } from "../shared/date.js";
 import { supabase } from "../shared/db.js";
+import { mapInsightRow, mapSnapshotRow } from "../shared/mappers.js";
 import type { CompetitorSnapshot, Insight } from "../shared/types.js";
 
 export async function fetchRecentSnapshots(orgId: string): Promise<CompetitorSnapshot[]> {
@@ -14,7 +15,7 @@ export async function fetchRecentSnapshots(orgId: string): Promise<CompetitorSna
 		throw new Error(`Failed to fetch snapshots: ${error.message}`);
 	}
 
-	return (data ?? []) as CompetitorSnapshot[];
+	return (data ?? []).map((row) => mapSnapshotRow(row as Record<string, unknown>));
 }
 
 export async function saveInsights(
@@ -60,5 +61,5 @@ export async function fetchInsightsByWeek(weekOf: string): Promise<Insight[]> {
 		throw new Error(`Failed to fetch insights: ${error.message}`);
 	}
 
-	return (data ?? []) as Insight[];
+	return (data ?? []).map((row) => mapInsightRow(row as Record<string, unknown>));
 }
