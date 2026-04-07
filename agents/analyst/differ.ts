@@ -5,6 +5,7 @@ import type { G2Data } from "../collector/sources/g2.js";
 import type { HnData } from "../collector/sources/hn.js";
 import type { WebsiteCollectionResult } from "../collector/sources/website.js";
 import type { CompetitorSnapshot, Insight } from "../shared/types.js";
+import { summarizeWebsiteDiff } from "./summarizer.js";
 
 export interface DetectedDiff {
 	type: Insight["type"];
@@ -19,14 +20,25 @@ function truncate(text: string): string {
 	return `${text.slice(0, MAX_DETAIL_TEXT_LENGTH)}...`;
 }
 
-function detectWebsiteDiffs(
+function classifyPageType(path: string): DetectedDiff["type"] {
+	const lower = path.toLowerCase();
+	if (lower.includes("pricing") || lower.includes("plans")) return "pricing";
+	if (lower.includes("feature") || lower.includes("product") || lower.includes("solutions"))
+		return "feature";
+	return "messaging";
+}
+
+async function detectWebsiteDiffs(
 	current: WebsiteCollectionResult,
 	previous: WebsiteCollectionResult,
-): DetectedDiff[] {
+): Promise<DetectedDiff[]> {
 	const diffs: DetectedDiff[] = [];
 	const currentPages = current.pages;
 	const previousPages = previous.pages;
 	const allPaths = new Set([...Object.keys(currentPages), ...Object.keys(previousPages)]);
+
+	// Collect LLM summarization tasks for bodyText changes
+	const summarizeTasks: Promise<void>[] = [];
 
 	for (const path of allPaths) {
 		const curPage = currentPages[path];
@@ -41,40 +53,27 @@ function detectWebsiteDiffs(
 			});
 		}
 
-		const lowerPath = path.toLowerCase();
+		// Body text changed → summarize with LLM
+		if (curPage.bodyText !== prevPage.bodyText) {
+			const type = classifyPageType(path);
+			const title = curPage.title || path;
 
-		if (
-			(lowerPath.includes("pricing") || lowerPath.includes("plans")) &&
-			curPage.bodyText !== prevPage.bodyText
-		) {
-			diffs.push({
-				type: "pricing",
-				summary: `Pricing page content changed on "${path}"`,
-				detail: {
-					path,
-					field: "bodyText",
-					previous: truncate(prevPage.bodyText),
-					current: truncate(curPage.bodyText),
-				},
-			});
-		}
-
-		if (
-			(lowerPath.includes("feature") ||
-				lowerPath.includes("product") ||
-				lowerPath.includes("solutions")) &&
-			curPage.bodyText !== prevPage.bodyText
-		) {
-			diffs.push({
-				type: "feature",
-				summary: `Features page content changed on "${path}"`,
-				detail: {
-					path,
-					field: "bodyText",
-					previous: truncate(prevPage.bodyText),
-					current: truncate(curPage.bodyText),
-				},
-			});
+			summarizeTasks.push(
+				summarizeWebsiteDiff(path, title, prevPage.bodyText, curPage.bodyText).then((result) => {
+					diffs.push({
+						type,
+						summary: result.headline,
+						detail: {
+							path,
+							field: "bodyText",
+							changes: result.changes,
+							salesImplication: result.salesImplication,
+							previous: truncate(prevPage.bodyText),
+							current: truncate(curPage.bodyText),
+						},
+					});
+				}),
+			);
 		}
 
 		const prevSet = new Set(prevPage.headings);
@@ -90,6 +89,9 @@ function detectWebsiteDiffs(
 			});
 		}
 	}
+
+	// Run all LLM summarizations in parallel
+	await Promise.all(summarizeTasks);
 
 	return diffs;
 }

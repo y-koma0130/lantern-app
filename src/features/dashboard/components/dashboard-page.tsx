@@ -31,6 +31,7 @@ interface InsightRow {
 	type: string;
 	importance_score: number;
 	summary: string;
+	diff_detail: Record<string, unknown>;
 	week_of: string;
 	competitors: unknown;
 }
@@ -48,7 +49,7 @@ export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPagePr
 
 	let insightsQuery = supabase
 		.from("insights")
-		.select("id, type, importance_score, summary, week_of, competitors(name)")
+		.select("id, type, importance_score, summary, diff_detail, week_of, competitors(name)")
 		.eq("org_id", orgId)
 		.order("importance_score", { ascending: false })
 		.limit(20);
@@ -122,6 +123,7 @@ export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPagePr
 													competitorName={competitor?.name ?? "Unknown"}
 													summary={insight.summary}
 													importanceScore={insight.importance_score}
+													diffDetail={insight.diff_detail ?? {}}
 												/>
 											);
 										})}
