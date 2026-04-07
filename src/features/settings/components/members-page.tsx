@@ -29,9 +29,21 @@ export async function MembersPage({ orgSlug }: MembersPageProps) {
 			: Promise.resolve({ data: [] }),
 	]);
 
-	const members = (membersResult.data ?? []).map((m) => ({
+	const rawMembers = membersResult.data ?? [];
+
+	// Fetch emails per member via admin API
+	const emailMap = new Map<string, string>();
+	await Promise.all(
+		rawMembers.map(async (m) => {
+			const { data } = await supabase.auth.admin.getUserById(m.user_id as string);
+			if (data?.user?.email) emailMap.set(m.user_id as string, data.user.email);
+		}),
+	);
+
+	const members = rawMembers.map((m) => ({
 		id: m.id,
 		userId: m.user_id,
+		email: emailMap.get(m.user_id as string) ?? "",
 		role: m.role,
 		createdAt: m.created_at,
 	}));

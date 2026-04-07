@@ -32,6 +32,9 @@ export interface Competitor {
 	linkedinSlug: string | null;
 	crunchbaseSlug: string | null;
 	niche: string;
+	/** LLM-discovered page paths, e.g. { pricing: "/plans", features: "/product" } */
+	discoveredPages: Record<string, string>;
+	pagesDiscoveredAt: string | null;
 	createdAt: string;
 }
 

@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import { fetchRenderedHtml } from "../../shared/browser.js";
+import { isErrorPage } from "../../shared/page-utils.js";
 import type { Competitor } from "../../shared/types.js";
 
 export interface PageData {
@@ -15,7 +16,6 @@ export interface WebsiteCollectionResult {
 	pages: Record<string, PageData>;
 }
 
-const SUBPAGES = ["/pricing", "/features", "/blog"] as const;
 const MAX_BODY_TEXT_LENGTH = 10_000;
 
 function buildAbsoluteUrl(base: string, path: string): string {
@@ -44,18 +44,42 @@ function extractPageData(html: string): PageData {
 	return { title, metaDescription, headings, bodyText };
 }
 
+/**
+ * Build the list of pages to scrape.
+ * Uses LLM-discovered pages when available, with "/" always included.
+ */
+function buildPageList(competitor: Competitor): { path: string; url: string }[] {
+	const pages: { path: string; url: string }[] = [{ path: "/", url: competitor.website }];
+
+	const discovered = competitor.discoveredPages ?? {};
+
+	for (const [category, path] of Object.entries(discovered)) {
+		if (path === "/") continue; // already included
+		pages.push({
+			path,
+			url: buildAbsoluteUrl(competitor.website, path),
+		});
+	}
+
+	return pages;
+}
+
 export async function collectWebsiteData(competitor: Competitor): Promise<WebsiteCollectionResult> {
 	console.log(`[Collector] Crawling website for ${competitor.name}: ${competitor.website}`);
 
-	const allUrls = [
-		{ path: "/", url: competitor.website },
-		...SUBPAGES.map((path) => ({ path, url: buildAbsoluteUrl(competitor.website, path) })),
-	];
+	const allUrls = buildPageList(competitor);
 
 	const results = await Promise.allSettled(
 		allUrls.map(async ({ path, url }) => {
 			const html = await fetchRenderedHtml(url);
-			return html ? { path, data: extractPageData(html) } : null;
+			if (!html) return null;
+			const data = extractPageData(html);
+			// Skip error pages
+			if (path !== "/" && isErrorPage(data.title, data.bodyText)) {
+				console.log(`[Collector] Skipping error page: ${url}`);
+				return null;
+			}
+			return { path, data };
 		}),
 	);
 

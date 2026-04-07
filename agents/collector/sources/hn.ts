@@ -1,3 +1,4 @@
+import { filterRelevantHnStories } from "../../shared/page-utils.js";
 import type { Competitor } from "../../shared/types.js";
 
 export interface HnStory {
@@ -70,7 +71,7 @@ export async function collectHnMentions(competitor: Competitor): Promise<HnData>
 
 		const json = (await res.json()) as AlgoliaResponse;
 
-		const stories: HnStory[] = json.hits.map((hit) => ({
+		const allStories: HnStory[] = json.hits.map((hit) => ({
 			objectID: hit.objectID,
 			title: hit.title,
 			url: hit.url,
@@ -80,7 +81,11 @@ export async function collectHnMentions(competitor: Competitor): Promise<HnData>
 			createdAt: hit.created_at,
 		}));
 
-		console.log(`[HN] Found ${stories.length} stories for "${query}" (total: ${json.nbHits})`);
+		const stories = filterRelevantHnStories(allStories, competitor.name);
+
+		console.log(
+			`[HN] Found ${allStories.length} stories for "${query}", ${stories.length} relevant`,
+		);
 
 		return {
 			competitorName: competitor.name,

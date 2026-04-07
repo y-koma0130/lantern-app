@@ -6,6 +6,7 @@ import { useState } from "react";
 interface Member {
 	id: string;
 	userId: string;
+	email: string;
 	role: string;
 	createdAt: string;
 }
@@ -98,7 +99,7 @@ export function MemberList({ members, orgId, currentUserId, isOwner }: MemberLis
 					<thead>
 						<tr className="bg-surface-subtle">
 							<th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-								User ID
+								Email
 							</th>
 							<th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
 								Role
@@ -120,7 +121,7 @@ export function MemberList({ members, orgId, currentUserId, isOwner }: MemberLis
 							return (
 								<tr key={member.id} className={index % 2 === 0 ? "bg-white" : "bg-surface-subtle"}>
 									<td className="px-4 py-3 text-sm text-text-primary">
-										<span className="font-mono text-xs">{member.userId.slice(0, 8)}...</span>
+										{member.email}
 										{isSelf && (
 											<span className="ml-2 rounded-[3px] bg-brand-light px-1.5 py-0.5 text-xs font-medium text-brand">
 												You

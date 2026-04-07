@@ -84,7 +84,7 @@ export function buildPrompt(insights: Insight[]): string {
 
 	const insightBlocks = insights
 		.map((insight) => {
-			const detail = insight.diffDetail as Record<string, unknown>;
+			const detail = (insight.diffDetail as Record<string, unknown>) ?? {};
 			const detailStr = formatDetail(detail);
 			return `- [${insight.type.toUpperCase()}] (score: ${insight.importanceScore}) ${insight.summary}${detailStr}`;
 		})

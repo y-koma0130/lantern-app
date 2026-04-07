@@ -111,7 +111,7 @@ export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPagePr
 											</span>
 										</h3>
 									</div>
-									<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+									<div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2 lg:grid-cols-3">
 										{sectionInsights.map((insight) => {
 											const competitor = insight.competitors as unknown as {
 												name: string;
@@ -122,7 +122,6 @@ export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPagePr
 													type={insight.type}
 													competitorName={competitor?.name ?? "Unknown"}
 													summary={insight.summary}
-													importanceScore={insight.importance_score}
 													diffDetail={insight.diff_detail ?? {}}
 												/>
 											);

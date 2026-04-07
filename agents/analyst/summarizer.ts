@@ -106,3 +106,86 @@ function fallbackSummary(path: string): WebsiteDiffSummary {
 		salesImplication: "",
 	};
 }
+
+/* ---------- Baseline page summary ---------- */
+
+export interface BaselinePageSummary {
+	/** One-line description of what this page communicates */
+	headline: string;
+	/** Key positioning points or notable details */
+	keyPoints: string[];
+	/** Competitive takeaway */
+	competitiveTakeaway: string;
+}
+
+const BASELINE_PROMPT = `You are a competitive intelligence analyst for cybersecurity SaaS companies.
+
+Summarize the following competitor web page for a sales team. Extract what matters competitively.
+
+## Competitor: {competitor}
+## Page: {path}
+## Page title: {title}
+
+### Content
+{content}
+
+## Instructions
+
+Return a JSON object (no markdown fences) with exactly these fields:
+
+{
+  "headline": "<one-line summary of what this page communicates, max 120 chars>",
+  "keyPoints": ["<notable competitive detail 1>", "<notable competitive detail 2>"],
+  "competitiveTakeaway": "<one sentence: what this means for our positioning>"
+}
+
+Rules:
+- headline: Describe the page's PURPOSE and KEY MESSAGE, not just "pricing page". Example: "4 tiers from Free to Enterprise ($499/mo), SSO only on Enterprise"
+- keyPoints: 2-4 specific, concrete details. Pricing tiers, key feature claims, target audience, differentiators.
+- competitiveTakeaway: What our sales team should know. Example: "They don't offer a free tier — opportunity to win budget-conscious prospects"
+- Return ONLY valid JSON.`;
+
+export async function summarizeBaselinePage(
+	competitorName: string,
+	path: string,
+	title: string,
+	content: string,
+): Promise<BaselinePageSummary> {
+	const prompt = BASELINE_PROMPT.replace("{competitor}", competitorName)
+		.replace("{path}", path)
+		.replace("{title}", title)
+		.replace("{content}", content.slice(0, 4000));
+
+	try {
+		const response = await getClient().messages.create({
+			model: "claude-haiku-4-5-20251001",
+			max_tokens: 512,
+			messages: [{ role: "user", content: prompt }],
+		});
+
+		const block = response.content[0];
+		if (!block || block.type !== "text") {
+			return { headline: title, keyPoints: [], competitiveTakeaway: "" };
+		}
+
+		const cleaned = block.text
+			.replace(/```json\s*/g, "")
+			.replace(/```\s*/g, "")
+			.trim();
+		const parsed = JSON.parse(cleaned) as {
+			headline?: string;
+			keyPoints?: string[];
+			competitiveTakeaway?: string;
+		};
+
+		return {
+			headline: parsed.headline ?? title,
+			keyPoints: Array.isArray(parsed.keyPoints) ? parsed.keyPoints.slice(0, 5) : [],
+			competitiveTakeaway: parsed.competitiveTakeaway ?? "",
+		};
+	} catch (err: unknown) {
+		const message = err instanceof Error ? err.message : String(err);
+		console.warn(`[Summarizer] Baseline failed for ${path}: ${message}`);
+		return { headline: title, keyPoints: [], competitiveTakeaway: "" };
+	}
+}

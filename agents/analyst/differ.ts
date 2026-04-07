@@ -4,8 +4,9 @@ import type { G2SentimentData } from "../collector/sources/g2-sentiment.js";
 import type { G2Data } from "../collector/sources/g2.js";
 import type { HnData } from "../collector/sources/hn.js";
 import type { WebsiteCollectionResult } from "../collector/sources/website.js";
+import { filterRelevantHnStories, isErrorPage } from "../shared/page-utils.js";
 import type { CompetitorSnapshot, Insight } from "../shared/types.js";
-import { summarizeWebsiteDiff } from "./summarizer.js";
+import { summarizeBaselinePage, summarizeWebsiteDiff } from "./summarizer.js";
 
 export interface DetectedDiff {
 	type: Insight["type"];
@@ -246,7 +247,8 @@ function detectG2SentimentDiffs(
 function detectHnDiffs(current: HnData, previous: HnData): DetectedDiff[] {
 	const diffs: DetectedDiff[] = [];
 	const previousIds = new Set(previous.stories.map((s) => s.objectID));
-	const newStories = current.stories.filter((s) => !previousIds.has(s.objectID));
+	const rawNew = current.stories.filter((s) => !previousIds.has(s.objectID));
+	const newStories = filterRelevantHnStories(rawNew, current.competitorName);
 
 	if (newStories.length === 0) return diffs;
 
@@ -371,11 +373,14 @@ function detectCrunchbaseDiffs(current: CrunchbaseData, previous: CrunchbaseData
 	return diffs;
 }
 
-export async function detectDiffs(snapshot: CompetitorSnapshot): Promise<DetectedDiff[]> {
-	const previous = await getLatestSnapshot(snapshot.competitorId, snapshot.source);
+export async function detectDiffs(
+	snapshot: CompetitorSnapshot,
+	competitorName?: string,
+): Promise<DetectedDiff[]> {
+	const previous = await getLatestSnapshot(snapshot.competitorId, snapshot.source, snapshot.id);
 
 	if (!previous) {
-		return generateInitialInsights(snapshot);
+		return generateInitialInsights(snapshot, competitorName ?? "");
 	}
 
 	switch (snapshot.source) {
@@ -409,44 +414,44 @@ export async function detectDiffs(snapshot: CompetitorSnapshot): Promise<Detecte
 	}
 }
 
-function generateInitialInsights(snapshot: CompetitorSnapshot): DetectedDiff[] {
+async function generateInitialInsights(
+	snapshot: CompetitorSnapshot,
+	competitorName: string,
+): Promise<DetectedDiff[]> {
 	const diffs: DetectedDiff[] = [];
 
 	if (snapshot.source === "website") {
 		const data = snapshot.rawData as unknown as WebsiteCollectionResult;
 		const pages = data.pages ?? {};
 
+		const summarizeTasks: Promise<void>[] = [];
+
 		for (const [path, page] of Object.entries(pages)) {
 			if (!page?.title) continue;
+			if (isErrorPage(page.title, page.bodyText ?? "")) continue;
 
-			const lowerPath = path.toLowerCase();
-			let type: DetectedDiff["type"] = "messaging";
+			const type = classifyPageType(path);
 
-			if (lowerPath.includes("pricing") || lowerPath.includes("plans")) {
-				type = "pricing";
-			} else if (
-				lowerPath.includes("feature") ||
-				lowerPath.includes("product") ||
-				lowerPath.includes("solutions")
-			) {
-				type = "feature";
-			}
-
-			const headings = page.headings ?? [];
-			const bodyPreview = truncate(page.bodyText ?? "");
-
-			diffs.push({
-				type,
-				summary: `[Baseline] ${page.title} — ${headings.length} sections, ${(page.bodyText ?? "").length} chars of content`,
-				detail: {
-					path,
-					title: page.title,
-					headings,
-					bodyPreview,
-					metaDescription: page.metaDescription ?? "",
-				},
-			});
+			summarizeTasks.push(
+				summarizeBaselinePage(competitorName, path, page.title, page.bodyText ?? "").then(
+					(result) => {
+						diffs.push({
+							type,
+							summary: `[Baseline] ${result.headline}`,
+							detail: {
+								path,
+								title: page.title,
+								changes: result.keyPoints,
+								salesImplication: result.competitiveTakeaway,
+								metaDescription: page.metaDescription ?? "",
+							},
+						});
+					},
+				),
+			);
 		}
+
+		await Promise.all(summarizeTasks);
 	}
 
 	if (snapshot.source === "g2") {
@@ -486,15 +491,16 @@ function generateInitialInsights(snapshot: CompetitorSnapshot): DetectedDiff[] {
 
 	if (snapshot.source === "hn") {
 		const data = snapshot.rawData as unknown as HnData;
+		const relevant = filterRelevantHnStories(data.stories, data.competitorName);
 
-		if (data.stories.length > 0) {
-			const topStory = data.stories.reduce((a, b) => (a.points > b.points ? a : b));
+		if (relevant.length > 0) {
+			const topStory = relevant.reduce((a, b) => (a.points > b.points ? a : b));
 			diffs.push({
 				type: "messaging",
-				summary: `[Baseline] ${data.stories.length} HackerNews mention(s) for ${data.competitorName}. Top: "${topStory.title}" (${topStory.points} points)`,
+				summary: `[Baseline] ${relevant.length} HackerNews mention(s) for ${data.competitorName}. Top: "${topStory.title}" (${topStory.points} points)`,
 				detail: {
 					competitorName: data.competitorName,
-					storyCount: data.stories.length,
+					storyCount: relevant.length,
 					topStory: {
 						title: topStory.title,
 						url: topStory.url,

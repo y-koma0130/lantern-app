@@ -30,9 +30,8 @@ function buildEmailHtml(bodyHtml: string, weekOf: string): string {
 <!-- Header -->
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%;">
 <tr>
-<td style="padding: 24px 32px; background-color: #06b6d4; border-radius: 8px 8px 0 0;">
-	<h1 style="margin: 0; color: #FFFFFF; font-size: 20px; font-weight: 600;">Lantern</h1>
-	<p style="margin: 4px 0 0; color: #B3D4FF; font-size: 13px;">Weekly Intelligence Digest — ${weekOf}</p>
+<td style="padding: 16px 32px; background-color: #06b6d4; border-radius: 8px 8px 0 0;">
+	<p style="margin: 0; color: #FFFFFF; font-size: 14px; font-weight: 600;">Lantern <span style="font-weight: 400; color: #B3D4FF;">— Weekly Digest, ${weekOf}</span></p>
 </td>
 </tr>
 </table>

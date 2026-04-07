@@ -45,7 +45,7 @@ export async function GET(
 		if (type === "insights") {
 			const { data: insights } = await supabase
 				.from("insights")
-				.select("id, type, importance_score, summary, week_of, created_at, competitors(name)")
+				.select("type, summary, week_of, created_at, competitors(name)")
 				.eq("org_id", orgId)
 				.order("created_at", { ascending: false })
 				.limit(1000);
@@ -53,9 +53,7 @@ export async function GET(
 			const rows = (insights ?? []).map((i) => {
 				const competitor = i.competitors as unknown as { name: string } | null;
 				return {
-					id: i.id,
 					type: i.type,
-					importance_score: i.importance_score,
 					summary: i.summary,
 					competitor: competitor?.name ?? "",
 					week_of: i.week_of,
@@ -64,29 +62,21 @@ export async function GET(
 			});
 
 			csv = toCsv(
-				["ID", "Type", "Score", "Summary", "Competitor", "Week", "Created"],
-				rows.map((r) => [
-					r.id,
-					r.type,
-					String(r.importance_score),
-					r.summary,
-					r.competitor,
-					r.week_of,
-					r.created_at,
-				]),
+				["Type", "Summary", "Competitor", "Week", "Created"],
+				rows.map((r) => [r.type, r.summary, r.competitor, r.week_of, r.created_at]),
 			);
 			filename = `lantern-insights-${new Date().toISOString().split("T")[0]}.csv`;
 		} else {
 			const { data: digests } = await supabase
 				.from("digests")
-				.select("id, week_of, content_md, generated_at")
+				.select("week_of, content_md, generated_at")
 				.eq("org_id", orgId)
 				.order("generated_at", { ascending: false })
 				.limit(100);
 
 			csv = toCsv(
-				["ID", "Week", "Content", "Generated"],
-				(digests ?? []).map((d) => [d.id, d.week_of, d.content_md, d.generated_at]),
+				["Week", "Content", "Generated"],
+				(digests ?? []).map((d) => [d.week_of, d.content_md, d.generated_at]),
 			);
 			filename = `lantern-digests-${new Date().toISOString().split("T")[0]}.csv`;
 		}

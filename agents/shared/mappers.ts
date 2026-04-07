@@ -21,6 +21,8 @@ export function mapCompetitorRow(row: Record<string, unknown>): Competitor {
 		linkedinSlug: (row.linkedin_slug as string) ?? null,
 		crunchbaseSlug: (row.crunchbase_slug as string) ?? null,
 		niche: row.niche as string,
+		discoveredPages: (row.discovered_pages as Record<string, string>) ?? {},
+		pagesDiscoveredAt: (row.pages_discovered_at as string) ?? null,
 		createdAt: row.created_at as string,
 		orgId: row.org_id as string,
 	};

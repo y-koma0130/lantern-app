@@ -1,11 +1,17 @@
-import type { CompetitorSnapshot } from "../shared/types.js";
+import type { Competitor, CompetitorSnapshot } from "../shared/types.js";
 import type { Organization } from "../shared/types.js";
-import { fetchCompetitors, getLatestSnapshot, saveSnapshots } from "./repository.js";
+import {
+	fetchCompetitors,
+	getLatestSnapshot,
+	saveDiscoveredPages,
+	saveSnapshots,
+} from "./repository.js";
 import { collectCrunchbaseData } from "./sources/crunchbase.js";
 import type { G2SentimentData } from "./sources/g2-sentiment.js";
 import { analyzeG2Sentiment } from "./sources/g2-sentiment.js";
 import { collectG2Reviews } from "./sources/g2.js";
 import { collectHnMentions } from "./sources/hn.js";
+import { discoverPages } from "./sources/page-discovery.js";
 import { collectWebsiteData } from "./sources/website.js";
 
 type SnapshotInput = {
@@ -15,10 +21,39 @@ type SnapshotInput = {
 	rawData: Record<string, unknown>;
 };
 
+/** Re-discover pages if never discovered or older than 30 days */
+const DISCOVERY_STALE_MS = 30 * 24 * 60 * 60 * 1000;
+
+function needsDiscovery(competitor: Competitor): boolean {
+	if (!competitor.pagesDiscoveredAt) return true;
+	const age = Date.now() - new Date(competitor.pagesDiscoveredAt).getTime();
+	return age > DISCOVERY_STALE_MS;
+}
+
 export async function runCollector(org: Organization): Promise<void> {
 	console.log("[Collector] Starting...");
 
-	const competitors = await fetchCompetitors(org.id);
+	let competitors = await fetchCompetitors(org.id);
+
+	// Phase 1: Discover pages for competitors that need it
+	const toDiscover = competitors.filter(needsDiscovery);
+	if (toDiscover.length > 0) {
+		console.log(`[Collector] Discovering pages for ${toDiscover.length} competitor(s)...`);
+		await Promise.allSettled(
+			toDiscover.map(async (competitor) => {
+				try {
+					const result = await discoverPages(competitor);
+					await saveDiscoveredPages(competitor.id, result.pages);
+				} catch (error) {
+					console.error(`[Collector] Discovery failed for ${competitor.name}:`, error);
+				}
+			}),
+		);
+		// Re-fetch to get updated discovered_pages
+		competitors = await fetchCompetitors(org.id);
+	}
+
+	// Phase 2: Collect data from all sources
 	const allResults = await Promise.allSettled(
 		competitors.map(async (competitor) => {
 			const hasG2 = Boolean(competitor.g2Url);

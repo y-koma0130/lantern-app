@@ -40,19 +40,42 @@ export async function saveSnapshots(
 export async function getLatestSnapshot(
 	competitorId: string,
 	source: CompetitorSnapshot["source"],
+	excludeId?: string,
 ): Promise<CompetitorSnapshot | null> {
-	const { data, error } = await supabase
+	let query = supabase
 		.from("competitor_snapshots")
 		.select("*")
 		.eq("competitor_id", competitorId)
 		.eq("source", source)
 		.order("collected_at", { ascending: false })
-		.limit(1)
-		.single();
+		.limit(1);
+
+	if (excludeId) {
+		query = query.neq("id", excludeId);
+	}
+
+	const { data, error } = await query.single();
 
 	if (error) {
 		return null;
 	}
 
 	return mapSnapshotRow(data as Record<string, unknown>);
+}
+
+export async function saveDiscoveredPages(
+	competitorId: string,
+	pages: Record<string, string>,
+): Promise<void> {
+	const { error } = await supabase
+		.from("competitors")
+		.update({
+			discovered_pages: pages,
+			pages_discovered_at: new Date().toISOString(),
+		})
+		.eq("id", competitorId);
+
+	if (error) {
+		throw new Error(`Failed to save discovered pages: ${error.message}`);
+	}
 }
