@@ -75,7 +75,7 @@ export const PLANS: Record<string, PlanFeatures> = {
 		name: "Team",
 		monthlyPrice: 399,
 		yearlyPrice: 3990,
-		competitors: 50,
+		competitors: 100,
 		members: 25,
 		frequency: "weekly",
 		emailDelivery: true,
