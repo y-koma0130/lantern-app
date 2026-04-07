@@ -2,10 +2,10 @@ import type { DetectedDiff } from "./differ.js";
 
 const TYPE_WEIGHTS: Record<DetectedDiff["type"], number> = {
 	pricing: 90,
-	feature: 70,
-	hiring: 50,
 	funding: 85,
-	sentiment: 40,
+	sentiment: 75,
+	feature: 70,
+	hiring: 65,
 	messaging: 60,
 };
 

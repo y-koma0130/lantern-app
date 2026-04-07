@@ -11,7 +11,7 @@ export default function SignupPage() {
 		<div>
 			<div className="mb-8 text-center">
 				<Logo size="lg" className="justify-center" />
-					<h1 className="mt-4 text-2xl font-bold text-text-primary">Create your account</h1>
+				<h1 className="mt-4 text-2xl font-bold text-text-primary">Create your account</h1>
 			</div>
 			<SignupForm />
 		</div>

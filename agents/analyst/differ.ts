@@ -1,5 +1,8 @@
 import { getLatestSnapshot } from "../collector/repository.js";
+import type { CrunchbaseData } from "../collector/sources/crunchbase.js";
+import type { G2SentimentData } from "../collector/sources/g2-sentiment.js";
 import type { G2Data } from "../collector/sources/g2.js";
+import type { HnData } from "../collector/sources/hn.js";
 import type { WebsiteCollectionResult } from "../collector/sources/website.js";
 import type { CompetitorSnapshot, Insight } from "../shared/types.js";
 
@@ -148,6 +151,224 @@ function detectG2Diffs(current: G2Data, previous: G2Data): DetectedDiff[] {
 	return diffs;
 }
 
+function detectG2SentimentDiffs(
+	current: G2SentimentData,
+	previous: G2SentimentData,
+): DetectedDiff[] {
+	const diffs: DetectedDiff[] = [];
+
+	// Rating trend change
+	if (
+		current.ratingTrend !== "unknown" &&
+		previous.ratingTrend !== "unknown" &&
+		current.ratingTrend !== previous.ratingTrend
+	) {
+		diffs.push({
+			type: "sentiment",
+			summary: `G2 rating trend shifted from "${previous.ratingTrend}" to "${current.ratingTrend}" for ${current.competitorName}`,
+			detail: {
+				field: "ratingTrend",
+				previous: previous.ratingTrend,
+				current: current.ratingTrend,
+				avgRating: current.avgRating,
+			},
+		});
+	}
+
+	// Emerging themes
+	for (const theme of current.emergingThemes) {
+		diffs.push({
+			type: "sentiment",
+			summary: `G2 emerging theme for ${current.competitorName}: "${theme}"`,
+			detail: {
+				field: "emergingTheme",
+				theme,
+				competitorName: current.competitorName,
+			},
+		});
+	}
+
+	// Fading themes — signal that a previously notable concern has disappeared
+	for (const theme of current.fadingThemes) {
+		diffs.push({
+			type: "sentiment",
+			summary: `G2 fading theme for ${current.competitorName}: "${theme}" is no longer mentioned`,
+			detail: {
+				field: "fadingTheme",
+				theme,
+				competitorName: current.competitorName,
+			},
+		});
+	}
+
+	// Negative keyword spike detection
+	const prevNegativeMap = new Map<string, number>();
+	for (const kw of previous.topKeywords) {
+		if (kw.sentiment === "negative") prevNegativeMap.set(kw.word, kw.count);
+	}
+	for (const kw of current.topKeywords) {
+		if (kw.sentiment !== "negative") continue;
+		const prevCount = prevNegativeMap.get(kw.word) ?? 0;
+		if (kw.count >= prevCount + 2) {
+			diffs.push({
+				type: "sentiment",
+				summary: `Negative keyword spike for ${current.competitorName}: "${kw.word}" (${prevCount} → ${kw.count} mentions)`,
+				detail: {
+					field: "negativeKeywordSpike",
+					keyword: kw.word,
+					previousCount: prevCount,
+					currentCount: kw.count,
+					competitorName: current.competitorName,
+				},
+			});
+		}
+	}
+
+	// Sales signals (always generate if present — they are the core value)
+	if (current.salesSignals.length > 0) {
+		diffs.push({
+			type: "sentiment",
+			summary: `G2 sales signals for ${current.competitorName}: ${current.salesSignals.join(" / ")}`,
+			detail: {
+				field: "salesSignals",
+				signals: current.salesSignals,
+				topKeywords: current.topKeywords,
+				competitorName: current.competitorName,
+			},
+		});
+	}
+
+	return diffs;
+}
+
+function detectHnDiffs(current: HnData, previous: HnData): DetectedDiff[] {
+	const diffs: DetectedDiff[] = [];
+	const previousIds = new Set(previous.stories.map((s) => s.objectID));
+	const newStories = current.stories.filter((s) => !previousIds.has(s.objectID));
+
+	if (newStories.length === 0) return diffs;
+
+	// High-engagement stories (>= 10 points) get individual insights
+	const highEngagement = newStories.filter((s) => s.points >= 10);
+	const lowEngagement = newStories.filter((s) => s.points < 10);
+
+	for (const story of highEngagement) {
+		diffs.push({
+			type: "messaging",
+			summary: `HackerNews: "${story.title}" (${story.points} points, ${story.numComments} comments)`,
+			detail: {
+				field: "hnHighEngagement",
+				storyId: story.objectID,
+				title: story.title,
+				url: story.url,
+				points: story.points,
+				numComments: story.numComments,
+				createdAt: story.createdAt,
+				competitorName: current.competitorName,
+			},
+		});
+	}
+
+	// Low-engagement stories grouped into a single summary
+	if (lowEngagement.length > 0) {
+		diffs.push({
+			type: "messaging",
+			summary: `HackerNews: ${lowEngagement.length} new mention(s) for ${current.competitorName}`,
+			detail: {
+				field: "hnMentions",
+				stories: lowEngagement.map((s) => ({
+					title: s.title,
+					url: s.url,
+					points: s.points,
+					numComments: s.numComments,
+				})),
+				competitorName: current.competitorName,
+			},
+		});
+	}
+
+	return diffs;
+}
+
+function detectCrunchbaseDiffs(current: CrunchbaseData, previous: CrunchbaseData): DetectedDiff[] {
+	const diffs: DetectedDiff[] = [];
+
+	// New funding round detected
+	const prevRoundKeys = new Set(previous.fundingRounds.map((r) => `${r.roundName}-${r.date}`));
+	const newRounds = current.fundingRounds.filter(
+		(r) => !prevRoundKeys.has(`${r.roundName}-${r.date}`),
+	);
+
+	for (const round of newRounds) {
+		diffs.push({
+			type: "funding",
+			summary: `${current.competitorName} raised ${round.amount ?? "undisclosed amount"} in ${round.roundName}`,
+			detail: {
+				field: "fundingRound",
+				roundName: round.roundName,
+				amount: round.amount,
+				date: round.date,
+				leadInvestors: round.leadInvestors,
+				competitorName: current.competitorName,
+			},
+		});
+	}
+
+	// Total funding changed — skip if a new round already explains the change
+	if (
+		newRounds.length === 0 &&
+		current.totalFunding &&
+		previous.totalFunding &&
+		current.totalFunding !== previous.totalFunding
+	) {
+		diffs.push({
+			type: "funding",
+			summary: `${current.competitorName} total funding changed: ${previous.totalFunding} → ${current.totalFunding}`,
+			detail: {
+				field: "totalFunding",
+				previous: previous.totalFunding,
+				current: current.totalFunding,
+				competitorName: current.competitorName,
+			},
+		});
+	}
+
+	// Employee range changed
+	if (
+		current.employeeRange &&
+		previous.employeeRange &&
+		current.employeeRange !== previous.employeeRange
+	) {
+		diffs.push({
+			type: "hiring",
+			summary: `${current.competitorName} employee range changed: ${previous.employeeRange} → ${current.employeeRange}`,
+			detail: {
+				field: "employeeRange",
+				previous: previous.employeeRange,
+				current: current.employeeRange,
+				competitorName: current.competitorName,
+			},
+		});
+	}
+
+	// New press/news
+	const prevNewsTitles = new Set(previous.recentNews.map((n) => n.title));
+	const newNews = current.recentNews.filter((n) => !prevNewsTitles.has(n.title));
+	if (newNews.length > 0) {
+		diffs.push({
+			type: "messaging",
+			summary: `${current.competitorName}: ${newNews.length} new press mention(s)`,
+			detail: {
+				field: "crunchbaseNews",
+				news: newNews,
+				competitorName: current.competitorName,
+			},
+		});
+	}
+
+	return diffs;
+}
+
 export async function detectDiffs(snapshot: CompetitorSnapshot): Promise<DetectedDiff[]> {
 	const previous = await getLatestSnapshot(snapshot.competitorId, snapshot.source);
 
@@ -165,6 +386,21 @@ export async function detectDiffs(snapshot: CompetitorSnapshot): Promise<Detecte
 			return detectG2Diffs(
 				snapshot.rawData as unknown as G2Data,
 				previous.rawData as unknown as G2Data,
+			);
+		case "g2_sentiment":
+			return detectG2SentimentDiffs(
+				snapshot.rawData as unknown as G2SentimentData,
+				previous.rawData as unknown as G2SentimentData,
+			);
+		case "hn":
+			return detectHnDiffs(
+				snapshot.rawData as unknown as HnData,
+				previous.rawData as unknown as HnData,
+			);
+		case "crunchbase":
+			return detectCrunchbaseDiffs(
+				snapshot.rawData as unknown as CrunchbaseData,
+				previous.rawData as unknown as CrunchbaseData,
 			);
 		default:
 			return [];
@@ -223,6 +459,70 @@ function generateInitialInsights(snapshot: CompetitorSnapshot): DetectedDiff[] {
 					totalReviews: data.totalReviews,
 					category: data.category,
 					categoryRank: data.categoryRank,
+				},
+			});
+		}
+	}
+
+	if (snapshot.source === "g2_sentiment") {
+		const data = snapshot.rawData as unknown as G2SentimentData;
+
+		if (data.topKeywords.length > 0 || data.salesSignals.length > 0) {
+			diffs.push({
+				type: "sentiment",
+				summary: `[Baseline] G2 sentiment for ${data.competitorName}: ${data.topKeywords.length} keywords analysed, rating trend: ${data.ratingTrend}`,
+				detail: {
+					competitorName: data.competitorName,
+					ratingTrend: data.ratingTrend,
+					topKeywords: data.topKeywords,
+					emergingThemes: data.emergingThemes,
+					salesSignals: data.salesSignals,
+				},
+			});
+		}
+	}
+
+	if (snapshot.source === "hn") {
+		const data = snapshot.rawData as unknown as HnData;
+
+		if (data.stories.length > 0) {
+			const topStory = data.stories.reduce((a, b) => (a.points > b.points ? a : b));
+			diffs.push({
+				type: "messaging",
+				summary: `[Baseline] ${data.stories.length} HackerNews mention(s) for ${data.competitorName}. Top: "${topStory.title}" (${topStory.points} points)`,
+				detail: {
+					competitorName: data.competitorName,
+					storyCount: data.stories.length,
+					topStory: {
+						title: topStory.title,
+						url: topStory.url,
+						points: topStory.points,
+						numComments: topStory.numComments,
+					},
+				},
+			});
+		}
+	}
+
+	if (snapshot.source === "crunchbase") {
+		const data = snapshot.rawData as unknown as CrunchbaseData;
+
+		const parts: string[] = [];
+		if (data.totalFunding) parts.push(`Total funding: ${data.totalFunding}`);
+		if (data.lastFundingRound) parts.push(`Last round: ${data.lastFundingRound}`);
+		if (data.employeeRange) parts.push(`Employees: ${data.employeeRange}`);
+
+		if (parts.length > 0) {
+			diffs.push({
+				type: "funding",
+				summary: `[Baseline] ${data.competitorName} — ${parts.join(", ")}`,
+				detail: {
+					competitorName: data.competitorName,
+					totalFunding: data.totalFunding,
+					lastFundingRound: data.lastFundingRound,
+					lastFundingDate: data.lastFundingDate,
+					employeeRange: data.employeeRange,
+					fundingRounds: data.fundingRounds,
 				},
 			});
 		}

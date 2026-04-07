@@ -39,7 +39,7 @@ export interface CompetitorSnapshot {
 	id: string;
 	orgId: string;
 	competitorId: string;
-	source: "website" | "g2" | "github" | "linkedin" | "hn" | "crunchbase";
+	source: "website" | "g2" | "g2_sentiment" | "github" | "linkedin" | "hn" | "crunchbase";
 	rawData: Record<string, unknown>;
 	collectedAt: string;
 }

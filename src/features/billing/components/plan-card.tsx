@@ -100,7 +100,12 @@ export function PlanCard({
 			</p>
 
 			<ul className="mb-6 flex-1 space-y-2">
-				<FeatureRow enabled label={plan.competitors >= 100 ? "Unlimited competitors" : `${plan.competitors} competitors`} />
+				<FeatureRow
+					enabled
+					label={
+						plan.competitors >= 100 ? "Unlimited competitors" : `${plan.competitors} competitors`
+					}
+				/>
 				<FeatureRow enabled label={`${plan.members} user${plan.members > 1 ? "s" : ""}`} />
 				<FeatureRow
 					enabled

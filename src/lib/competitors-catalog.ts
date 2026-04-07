@@ -74,5 +74,9 @@ export const COMPETITORS_CATALOG: CatalogCompetitor[] = [
 	{ name: "OneLogin", website: "https://www.onelogin.com", niche: "Identity & Access Management" },
 	{ name: "Saviynt", website: "https://saviynt.com", niche: "Identity & Access Management" },
 	{ name: "Cisco Duo", website: "https://duo.com", niche: "Identity & Access Management" },
-	{ name: "ForgeRock", website: "https://www.forgerock.com", niche: "Identity & Access Management" },
+	{
+		name: "ForgeRock",
+		website: "https://www.forgerock.com",
+		niche: "Identity & Access Management",
+	},
 ];
