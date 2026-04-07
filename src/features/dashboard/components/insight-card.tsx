@@ -5,24 +5,24 @@ interface InsightCardProps {
 	importanceScore: number;
 }
 
-const TYPE_COLORS: Record<string, string> = {
-	pricing: "#FF5630",
-	feature: "#36B37E",
-	hiring: "#6554C0",
-	funding: "#FFAB00",
-	sentiment: "#00B8D9",
-	messaging: "#505F79",
+const TYPE_STYLES: Record<string, { bg: string; text: string }> = {
+	pricing: { bg: "#FFEBE6", text: "#BF2600" },
+	feature: { bg: "#E3FCEF", text: "#006644" },
+	hiring: { bg: "#EAE6FF", text: "#403294" },
+	funding: { bg: "#FFFAE6", text: "#946300" },
+	sentiment: { bg: "#E6FCFF", text: "#006A80" },
+	messaging: { bg: "#EBECF0", text: "#344563" },
 };
 
 export function InsightCard({ type, competitorName, summary, importanceScore }: InsightCardProps) {
-	const color = TYPE_COLORS[type] ?? "#505F79";
+	const style = TYPE_STYLES[type] ?? { bg: "#EBECF0", text: "#344563" };
 
 	return (
 		<div className="rounded-[3px] border border-border bg-white p-4">
 			<div className="mb-2 flex items-center justify-between gap-2">
 				<span
-					className="inline-block rounded-[3px] px-2 py-0.5 text-xs font-semibold text-white"
-					style={{ backgroundColor: color }}
+					className="inline-block rounded-[3px] px-2 py-0.5 text-xs font-semibold"
+					style={{ backgroundColor: style.bg, color: style.text }}
 				>
 					{type}
 				</span>
