@@ -66,7 +66,7 @@ export function OrgSwitcher({ orgs }: OrgSwitcherProps) {
 									<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
 										<path
 											d="M3 8L6.5 11.5L13 5"
-											stroke="#0052CC"
+											stroke="#06b6d4"
 											strokeWidth="2"
 											strokeLinecap="round"
 											strokeLinejoin="round"
@@ -85,7 +85,7 @@ export function OrgSwitcher({ orgs }: OrgSwitcherProps) {
 							className="flex items-center gap-2 px-3 py-2 text-sm text-brand hover:bg-surface-hover"
 						>
 							<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-								<path d="M8 3V13M3 8H13" stroke="#0052CC" strokeWidth="1.5" strokeLinecap="round" />
+								<path d="M8 3V13M3 8H13" stroke="#06b6d4" strokeWidth="1.5" strokeLinecap="round" />
 							</svg>
 							<span>Create new organization</span>
 						</Link>

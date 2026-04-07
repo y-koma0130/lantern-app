@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/components/logo";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,7 +25,7 @@ export function Header({ user, orgs }: HeaderProps) {
 	return (
 		<header className="flex h-14 shrink-0 items-center border-b border-border bg-white px-4">
 			<div className="flex items-center gap-3">
-				<span className="text-lg font-bold text-text-primary">Lantern</span>
+				<Logo size="sm" />
 			</div>
 
 			<div className="ml-6">

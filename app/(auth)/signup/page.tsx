@@ -1,3 +1,4 @@
+import { Logo } from "@/components/logo";
 import { SignupForm } from "@/features/auth/components/signup-form";
 import type { Metadata } from "next";
 
@@ -9,8 +10,8 @@ export default function SignupPage() {
 	return (
 		<div>
 			<div className="mb-8 text-center">
-				<h1 className="text-2xl font-bold text-text-primary">Create your account</h1>
-				<p className="mt-2 text-sm text-text-secondary">Get started with Lantern</p>
+				<Logo size="lg" className="justify-center" />
+					<h1 className="mt-4 text-2xl font-bold text-text-primary">Create your account</h1>
 			</div>
 			<SignupForm />
 		</div>

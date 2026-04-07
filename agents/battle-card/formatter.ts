@@ -30,7 +30,7 @@ function buildEmailHtml(bodyHtml: string, weekOf: string): string {
 <!-- Header -->
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%;">
 <tr>
-<td style="padding: 24px 32px; background-color: #0052CC; border-radius: 8px 8px 0 0;">
+<td style="padding: 24px 32px; background-color: #06b6d4; border-radius: 8px 8px 0 0;">
 	<h1 style="margin: 0; color: #FFFFFF; font-size: 20px; font-weight: 600;">Lantern</h1>
 	<p style="margin: 4px 0 0; color: #B3D4FF; font-size: 13px;">Weekly Intelligence Digest — ${weekOf}</p>
 </td>
@@ -53,7 +53,7 @@ function buildEmailHtml(bodyHtml: string, weekOf: string): string {
 <tr>
 <td style="padding: 20px 32px; background-color: #FAFBFC; border: 1px solid #DFE1E6; border-top: none; border-radius: 0 0 8px 8px;">
 	<p style="margin: 0; color: #97A0AF; font-size: 12px; text-align: center;">
-		Powered by <a href="https://lantern.app" style="color: #0052CC; text-decoration: none;">Lantern</a> — Competitive intelligence for cybersecurity teams.
+		Powered by <a href="https://lantern.app" style="color: #06b6d4; text-decoration: none;">Lantern</a> — Competitive intelligence for cybersecurity teams.
 	</p>
 </td>
 </tr>
@@ -94,11 +94,11 @@ function applyInlineStyles(html: string): string {
 			/<li>/g,
 			'<li style="margin: 0 0 4px; color: #172B4D; font-size: 14px; line-height: 1.5;">',
 		)
-		.replace(/<a /g, '<a style="color: #0052CC; text-decoration: underline;" ')
+		.replace(/<a /g, '<a style="color: #06b6d4; text-decoration: underline;" ')
 		.replace(/<strong>/g, '<strong style="color: #172B4D; font-weight: 600;">')
 		.replace(
 			/<blockquote>/g,
-			'<blockquote style="margin: 12px 0; padding: 8px 16px; border-left: 3px solid #0052CC; background-color: #F4F5F7; color: #505F79; font-size: 13px;">',
+			'<blockquote style="margin: 12px 0; padding: 8px 16px; border-left: 3px solid #06b6d4; background-color: #F4F5F7; color: #505F79; font-size: 13px;">',
 		)
 		.replace(
 			/<code>/g,

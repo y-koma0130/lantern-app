@@ -15,13 +15,13 @@
 
 	/* Borders */
 	--color-border: #dfe1e6;
-	--color-border-focus: #0052cc;
+	--color-border-focus: #0891b2;
 
 	/* Brand / Primary */
-	--color-brand: #0052cc;
-	--color-brand-hover: #0065ff;
-	--color-brand-light: #deebff;
-	--color-brand-subtle: #b3d4ff;
+	--color-brand: #0891b2;
+	--color-brand-hover: #0e7490;
+	--color-brand-light: #cffafe;
+	--color-brand-subtle: #67e8f9;
 
 	/* Success */
 	--color-success: #36b37e;

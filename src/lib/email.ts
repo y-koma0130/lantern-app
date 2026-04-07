@@ -43,7 +43,7 @@ export async function sendInvitationEmail(params: {
 				</p>
 				<div style="margin: 32px 0;">
 					<a href="${params.inviteUrl}"
-						style="display: inline-block; background-color: #0052CC; color: #fff; text-decoration: none; padding: 10px 24px; border-radius: 3px; font-size: 14px; font-weight: 500;">
+						style="display: inline-block; background-color: #06b6d4; color: #fff; text-decoration: none; padding: 10px 24px; border-radius: 3px; font-size: 14px; font-weight: 500;">
 						Accept Invitation
 					</a>
 				</div>
