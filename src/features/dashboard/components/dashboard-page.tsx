@@ -2,6 +2,7 @@ import { DigestListItem } from "@/features/dashboard/components/digest-list-item
 import { InsightCard } from "@/features/dashboard/components/insight-card";
 import { getArchiveDays } from "@/lib/plan-limits";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { type InsightType, SECTION_ORDER, getInsightConfig } from "../lib/insight-types";
 
 interface DashboardPageProps {
 	orgId: string;
@@ -15,6 +16,23 @@ function getArchiveCutoff(plan: string): string | null {
 	const cutoff = new Date();
 	cutoff.setDate(cutoff.getDate() - days);
 	return cutoff.toISOString();
+}
+
+function formatWeekDate(dateStr: string): string {
+	return new Date(dateStr).toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
+}
+
+interface InsightRow {
+	id: string;
+	type: string;
+	importance_score: number;
+	summary: string;
+	week_of: string;
+	competitors: unknown;
 }
 
 export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPageProps) {
@@ -33,7 +51,7 @@ export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPagePr
 		.select("id, type, importance_score, summary, week_of, competitors(name)")
 		.eq("org_id", orgId)
 		.order("importance_score", { ascending: false })
-		.limit(5);
+		.limit(20);
 
 	// Apply archive limit (null = unlimited, cutoff date = filter)
 	if (archiveCutoff) {
@@ -44,26 +62,71 @@ export async function DashboardPage({ orgId, orgSlug, orgPlan }: DashboardPagePr
 	const [digestsResult, insightsResult] = await Promise.all([digestsQuery, insightsQuery]);
 
 	const digests = digestsResult.data ?? [];
-	const insights = insightsResult.data ?? [];
+	const insights = (insightsResult.data ?? []) as InsightRow[];
+
+	// Group insights by type for section-based display
+	const grouped = new Map<InsightType, InsightRow[]>();
+	for (const insight of insights) {
+		const key = insight.type as InsightType;
+		const list = grouped.get(key);
+		if (list) {
+			list.push(insight);
+		} else {
+			grouped.set(key, [insight]);
+		}
+	}
+
+	// Latest week label
+	const firstInsight = insights[0];
+	const latestWeek = firstInsight ? formatWeekDate(firstInsight.week_of) : null;
 
 	return (
 		<>
 			<section className="mb-8">
 				<h2 className="mb-4 text-lg font-semibold text-text-primary">
-					This Week&apos;s Top Changes
+					{latestWeek ? `Insights — Week of ${latestWeek}` : "This Week\u2019s Insights"}
 				</h2>
 				{insights.length > 0 ? (
-					<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-						{insights.map((insight) => {
-							const competitor = insight.competitors as unknown as { name: string } | null;
+					<div className="space-y-6">
+						{SECTION_ORDER.filter((s) => grouped.has(s.key)).map((section) => {
+							const sectionInsights = grouped.get(section.key) ?? [];
+							const config = getInsightConfig(section.key);
 							return (
-								<InsightCard
-									key={insight.id}
-									type={insight.type}
-									competitorName={competitor?.name ?? "Unknown"}
-									summary={insight.summary}
-									importanceScore={insight.importance_score}
-								/>
+								<div key={section.key}>
+									<div className="mb-2 flex items-center gap-2">
+										<svg
+											width="16"
+											height="16"
+											viewBox="0 0 16 16"
+											fill={config.text}
+											aria-hidden="true"
+										>
+											<path d={config.iconPath} />
+										</svg>
+										<h3 className="text-sm font-semibold text-text-primary">
+											{section.title}
+											<span className="ml-1.5 text-xs font-normal text-text-tertiary">
+												({sectionInsights.length})
+											</span>
+										</h3>
+									</div>
+									<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+										{sectionInsights.map((insight) => {
+											const competitor = insight.competitors as unknown as {
+												name: string;
+											} | null;
+											return (
+												<InsightCard
+													key={insight.id}
+													type={insight.type}
+													competitorName={competitor?.name ?? "Unknown"}
+													summary={insight.summary}
+													importanceScore={insight.importance_score}
+												/>
+											);
+										})}
+									</div>
+								</div>
 							);
 						})}
 					</div>

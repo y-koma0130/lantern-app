@@ -99,7 +99,7 @@ export function buildPrompt(insights: Insight[]): string {
 
 function buildBaselinePrompt(insightBlocks: string): string {
 	return `You are a senior competitive intelligence analyst specialising in cybersecurity SaaS.
-You produce reports in Japanese for sales and product teams.
+You produce reports for sales and product teams.
 
 This is the FIRST analysis of these competitors. Create a comprehensive competitive landscape overview based on the initial data.
 
@@ -109,38 +109,38 @@ ${insightBlocks}
 
 ## Instructions
 
-Create a battle card digest in Markdown. Output ALL text in Japanese.
+Create a battle card digest in Markdown.
 
-### 1. 競合ランドスケープ概要
-- 各競合のポジショニングをWebサイトコンテンツに基づいてまとめる
-- 主要な価値提案とターゲット顧客を特定する
-- 価格アプローチ（価格ページのデータがある場合）
+### 1. Competitive Landscape Overview
+- Summarize each competitor's positioning based on their page content
+- Identify their primary value propositions and target audience
+- Note their pricing approach (if pricing page data is available)
 
-### 2. 競合プロファイル
-データがある各競合について:
-- **ポジショニング**: 何を主張し、誰をターゲットにしているか
-- **主要機能**: 機能ページからの注目すべき機能
-- **価格シグナル**: 見つかった価格指標
-- **G2センチメント**: レビューから見える顧客の声（データがある場合）
-- **資金・体力**: 調達状況・従業員規模（Crunchbase データがある場合）
-- **市場の声**: HackerNews での言及傾向（データがある場合）
+### 2. Competitor Profiles
+For each competitor with data:
+- **Positioning**: What they claim to do and who they target
+- **Key Features**: Notable capabilities from their features page
+- **Pricing Signal**: Any pricing indicators found
+- **G2 Sentiment**: What customers are saying in reviews (if data available)
+- **Funding & Scale**: Funding status and employee range (if Crunchbase data available)
+- **Market Buzz**: HackerNews mention trends (if data available)
 
-### 3. 戦略的所見
-- 競合横断での市場トレンド
-- 市場のギャップや機会
-- 意外なポジショニングやメッセージング
+### 3. Strategic Observations
+- Identify market trends across competitors
+- Note gaps or opportunities in the market
+- Highlight any surprising positioning or messaging
 
-### 4. 推奨事項
-- 今後の分析で注目すべき点
-- 競合差別化のための提案
-- 営業チームが準備すべき質問
+### 4. Recommendations
+- What to watch for in future analyses
+- Suggested areas for competitive differentiation
+- Key questions the sales team should be prepared to answer
 
-具体的なデータを引用すること。汎用的なアドバイスは書かない。`;
+Be specific and reference actual content from the data. Avoid generic advice.`;
 }
 
 function buildChangePrompt(insightBlocks: string): string {
 	return `You are a senior competitive intelligence analyst specialising in cybersecurity SaaS.
-You produce weekly digests in Japanese for sales and product teams.
+You produce weekly digests for sales and product teams.
 
 Based on the following competitive intelligence collected this week, generate an actionable digest.
 
@@ -150,43 +150,43 @@ ${insightBlocks}
 
 ## Instructions
 
-Create a weekly digest in Markdown. Output ALL text in Japanese.
+Create a weekly digest in Markdown.
 Include ONLY sections that have relevant data — omit empty sections entirely.
 Put the highest-impact section first.
 
 ### Available sections (include only when data exists):
 
-#### G2 センチメント速報
-- 新着レビュー数と評価トレンドの変化
-- 頻出キーワードの変化（特にネガティブキーワードの急増に注目）
-- 営業トークへの具体的な示唆
-- フォーマット例: 「競合X社のレビューで『○○』への言及が急増。先月まではゼロ → △△を訴求するタイミング」
+#### G2 Sentiment Pulse
+- New review count and rating trend changes
+- Keyword frequency shifts (especially spikes in negative keywords)
+- Specific implications for sales conversations
+- Example format: "Competitor X's reviews saw a surge in mentions of 'slow support' — was zero last month → opportunity to highlight our response times"
 
-#### メンション・ニュース
-- HackerNews・Reddit での言及サマリー
-- エンゲージメント（ポイント数・コメント数）を含める
-- 市場の声の要約と示唆
+#### Mentions & News
+- HackerNews and Reddit mention summary
+- Include engagement metrics (points, comment count)
+- Market voice summary and implications
 
-#### 調達・M&A
-- 資金調達ラウンドの詳細（金額、ラウンド名、リード投資家）
-- 従業員数の変化
-- 競合の体力・成長フェーズの評価
-- プレスリリース・ニュースの要約
+#### Funding & M&A
+- Funding round details (amount, round name, lead investors)
+- Employee count changes
+- Assessment of competitor's financial strength and growth phase
+- Press release and news summary
 
-#### Webサイト変化
-- 価格ページ・機能ページの変更点
-- メッセージング・ポジショニングの変化
-- 前後の比較を含める
+#### Website Changes
+- Pricing and feature page changes
+- Messaging and positioning shifts
+- Include before/after comparison
 
-#### 営業チーム向けアクション
-- 上記の全変化に基づく具体的なアクションアイテム
-- オブジェクションハンドリングのポイント
-- 進行中の案件に使えるトークポイント
+#### Sales Team Actions
+- Specific action items based on all changes above
+- Objection handling points
+- Talking points for deals in progress
 
 ## Rules
-- 各項目は「事実 → So What（だから何）→ 営業アクション」の3段構成にする
-- 変化がないセクションは完全に省略する
-- 最も重要度が高い変化を冒頭に配置する
-- 具体的なデータを引用する。汎用的なアドバイスは書かない
-- 全ての推奨事項は検出された具体的な変化に紐づけること`;
+- Structure each item as: Fact → So What → Sales Action
+- Completely omit sections with no changes
+- Lead with the highest-impact change
+- Reference specific data. No generic advice
+- Every recommendation must tie to a specific detected change`;
 }

@@ -51,13 +51,13 @@ Return a JSON object (no markdown fences) with exactly these fields:
   ],
   "emergingThemes": ["<theme that is new or significantly increasing>"],
   "fadingThemes": ["<theme that has disappeared or significantly decreased>"],
-  "salesSignals": ["<actionable insight for the sales team, in Japanese>"]
+  "salesSignals": ["<actionable insight for the sales team>"]
 }
 
 Rules:
 - topKeywords: extract 5-10 keywords/phrases, sorted by frequency. If the same concept appears in pros AND cons, list separately with correct sentiment.
 - emergingThemes / fadingThemes: compare against previous analysis if provided. If no previous analysis, emergingThemes = all notable themes, fadingThemes = [].
-- salesSignals: 1-3 concise, actionable sentences in Japanese. Format: "competitor weakness/strength → what our sales team should do".
+- salesSignals: 1-3 concise, actionable sentences. Format: "competitor weakness/strength → what our sales team should do".
 - Return ONLY valid JSON. No explanation, no markdown.`;
 
 function formatReviews(reviews: G2Data["recentReviews"]): string {

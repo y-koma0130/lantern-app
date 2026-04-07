@@ -128,3 +128,34 @@ body {
 .digest-content > :first-child {
 	margin-top: 0;
 }
+.digest-content hr {
+	border: none;
+	border-top: 1px solid var(--color-border);
+	margin: 1.5rem 0;
+}
+.digest-content table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 0.75rem;
+	font-size: 0.875rem;
+}
+.digest-content th,
+.digest-content td {
+	border: 1px solid var(--color-border);
+	padding: 0.5rem 0.75rem;
+	text-align: left;
+}
+.digest-content th {
+	background-color: var(--color-surface-subtle);
+	font-weight: 600;
+	color: var(--color-text-primary);
+}
+.digest-content td {
+	color: var(--color-text-secondary);
+}
+.digest-content code {
+	background-color: var(--color-surface-subtle);
+	padding: 0.125rem 0.25rem;
+	border-radius: 3px;
+	font-size: 0.85em;
+}

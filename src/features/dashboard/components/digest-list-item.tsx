@@ -27,6 +27,16 @@ function formatDate(dateStr: string): string {
 	});
 }
 
+/** Extract section headings (h2/h3/h4) from markdown to show as source badges */
+function extractSections(md: string): string[] {
+	const headings = md.match(/^#{2,4}\s+(.+)$/gm);
+	if (!headings) return [];
+	return headings
+		.map((h) => h.replace(/^#{2,4}\s+/, "").trim())
+		.filter((h) => h.length > 0)
+		.slice(0, 5);
+}
+
 export function DigestListItem({
 	id,
 	weekOf,
@@ -35,6 +45,7 @@ export function DigestListItem({
 	contentMd,
 }: DigestListItemProps) {
 	const preview = stripMarkdown(contentMd).slice(0, 150);
+	const sections = extractSections(contentMd);
 
 	return (
 		<Link
@@ -47,6 +58,18 @@ export function DigestListItem({
 				</span>
 				<span className="text-xs text-text-tertiary">Generated {formatDate(generatedAt)}</span>
 			</div>
+			{sections.length > 0 && (
+				<div className="mb-2 flex flex-wrap gap-1.5">
+					{sections.map((section) => (
+						<span
+							key={section}
+							className="inline-block rounded-[3px] bg-surface-hover px-1.5 py-0.5 text-xs text-text-secondary"
+						>
+							{section}
+						</span>
+					))}
+				</div>
+			)}
 			<p className="text-sm leading-relaxed text-text-secondary">
 				{preview}
 				{stripMarkdown(contentMd).length > 150 ? "..." : ""}
